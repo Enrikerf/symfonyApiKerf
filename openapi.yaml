@@ -1,0 +1,421 @@
+openapi: 3.0.1
+info:
+  title: Issue tracking service
+  description: Issue tracking service
+  version: 1.0.0
+servers:
+- url: /
+tags:
+- name: projects
+  description: project resource
+- name: issues
+  description: issue resource
+paths:
+  /projects:
+    get:
+      tags:
+      - projects
+      summary: Lists projects
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+        400:
+          description: Bad request
+          content: {}
+        500:
+          description: Internal error
+          content: {}
+    post:
+      tags:
+      - projects
+      summary: Add a new project to the tracker
+      requestBody:
+        description: Project object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProject'
+        required: true
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectCreated'
+        400:
+          description: Bad request
+          content: {}
+        500:
+          description: Internal error
+          content: {}
+  /project/{project_id}:
+    get:
+      tags:
+      - projects
+      summary: Find project by ID
+      parameters:
+      - name: project_id
+        in: path
+        description: ID of the project to display
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        400:
+          description: Bad request
+          content: {}
+        404:
+          description: Issue not found
+          content: {}
+        500:
+          description: Internal error
+          content: {}
+    put:
+      tags:
+      - projects
+      summary: Update project by ID
+      parameters:
+      - name: project_id
+        in: path
+        description: ID of the project to update
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: Name
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/ProjectName'
+        required: true
+      responses:
+        200:
+          description: Successful operation
+          content: {}
+        400:
+          description: Bad request
+          content: {}
+        404:
+          description: Project not found
+          content: {}
+        409:
+          description: Name already exists
+          content: {}
+        500:
+          description: Internal error
+          content: {}
+  /projects/{project_id}/issues:
+    get:
+      tags:
+      - issues
+      summary: Lists project issues
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: integer64
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ListIssue'
+        400:
+          description: Bad request
+          content: {}
+        404:
+          description: Project not found
+          content: {}
+        500:
+          description: Internal error
+          content: {}
+    post:
+      tags:
+      - issues
+      summary: Add a new issue to the project
+      parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: integer64
+      requestBody:
+        description: Issue object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateIssue'
+        required: true
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssueCreated'
+        400:
+          description: Bad request
+          content: {}
+        404:
+          description: Project not found
+          content: {}
+        500:
+          description: Internal error
+          content: {}
+  /issue/{id}:
+    get:
+      tags:
+      - issues
+      summary: Find issue by ID
+      description: Displays a single issue
+      parameters:
+      - name: id
+        in: path
+        description: ID of the issue to display
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issue'
+        400:
+          description: Bad request
+          content: {}
+        404:
+          description: Issue not found
+          content: {}
+        500:
+          description: Internal error
+          content: {}
+    patch:
+      tags:
+      - issues
+      summary: Update issue
+      description: Increase time spent on an issue
+      parameters:
+      - name: id
+        in: path
+        description: ID of the issue to display
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: Time
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/Time'
+        required: true
+      responses:
+        200:
+          description: successful operation
+          content: {}
+        400:
+          description: Bad request
+          content: {}
+        404:
+          description: Issue not found
+          content: {}
+        500:
+          description: Internal error
+          content: {}
+components:
+  schemas:
+    CreateProject:
+      required:
+      - title
+      type: object
+      properties:
+        title:
+          type: string
+          description: name of the project
+          example: a name
+    ProjectCreated:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: integer
+          description: identifier of the project
+          format: int64
+          example: 1
+    Project:
+      required:
+      - id
+      - issue_count
+      - name
+      type: object
+      properties:
+        id:
+          type: integer
+          description: identifier of the project
+          format: int64
+          example: 1
+        name:
+          type: string
+          description: name of the project
+        issue_count:
+          type: integer
+          description: number of issues in the project
+          format: int64
+          example: 13
+    ProjectName:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+          description: name of the project
+    CreateIssue:
+      required:
+      - type
+      - title
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [topic, config, action, design, dev]
+          description: type of the issue
+          example: dev
+        title:
+          type: string
+          description: title of the issue
+          example: a title
+        parent_id:
+          type: integer
+          format: int64
+          example: 1
+    IssueCreated:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+    ListIssue:
+      required:
+      - id
+      - project_id
+      - type
+      - title
+      - time
+      - total_time
+      type: object
+      properties:
+        id:
+          type: integer
+          description: identifier of the issue
+          format: int64
+          example: 1
+        project_id:
+          type: integer
+          description: identifier of the project
+          format: int64
+          example: 1
+        type:
+          type: string
+          enum: [topic, config, action, design, dev]
+          description: type of the issue
+          example: dev
+        title:
+          type: string
+          description: title of the issue
+          example: a parent issue
+        time:
+          type: number
+          description: time spent on this issue
+          example: 5.0
+        total_time:
+          type: number
+          description: time spent on this issue and its childs
+          example: 7.5
+    Issue:
+      required:
+      - id
+      - project_id
+      - type
+      - title
+      - time
+      - total_time
+      type: object
+      properties:
+        id:
+          type: integer
+          description: identifier of the issue
+          format: int64
+          example: 1
+        project_id:
+          type: integer
+          description: identifier of the project
+          format: int64
+          example: 1
+        type:
+          type: string
+          enum: [topic, config, action, design, dev]
+          description: type of the issue
+          example: topic
+        title:
+          type: string
+          description: title of the issue
+          example: a parent issue
+        time:
+          type: number
+          description: time spent on this issue
+          example: 5.0
+        total_time:
+          type: number
+          description: time spent on this issue and its childs
+          example: 7.5
+        childs:
+          type: array
+          description: child issues with the same schema
+          example:
+          - id: 2
+            type: config
+            title: a child issue
+            time: 2.5
+            total_time: 2.5
+          items:
+            $ref: '#/components/schemas/Issue'
+    Time:
+      required:
+      - time
+      type: object
+      properties:
+        time:
+          type: number
+          description: time spent
+          example: 1.25
+
+

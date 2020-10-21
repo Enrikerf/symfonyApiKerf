@@ -1,0 +1,1 @@
+* tener el bundle de openapi dentro no es lo suyo, mejor otro repo he importarlo, en este caso para que se pueda ver y evaluar su uso se ha puesto, se ha tenido que poner las dependencias en el json global a mano

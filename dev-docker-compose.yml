@@ -1,0 +1,19 @@
+version: "3.0"
+
+services:
+  nginx:
+    image: enrikerf/nginx:latest
+    depends_on:
+      - php-fpm
+    ports:
+      - 80:80
+      - 9009:9009
+  php-fpm:
+    image: enrikerf/php-fpm-xdebug:latest
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./app:/var/www/app
+    environment:
+      PHP_INI_XDEBUG__REMOTE_PORT: 9009
+      PHP_INI_XDEBUG__REMOTE_AUTOSTART: 1

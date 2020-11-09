@@ -6,14 +6,17 @@ use App\Adapter\out\Persistence\Doctrine\Entity\ProjectEntity;
 use App\Adapter\out\Persistence\Doctrine\Mapper\DoctrineMapperInterface;
 use App\Adapter\out\Persistence\Doctrine\Repository\ProjectEntityRepository;
 use App\Application\Port\out\Persistence\Database\GetProjectPort;
+use App\Application\Port\out\Persistence\Database\GetProjectsByPort;
 use App\Domain\Project\Project;
 use Doctrine\ORM\ORMException;
 use Exception;
 
 
-class ProjectPersistenceAdapter implements GetProjectPort
+class ProjectPersistenceAdapter implements GetProjectPort, GetProjectsByPort
 {
 
+    private const DEFAULT_OFFSET = 0;
+    private const DEFAULT_LIMIT = 100;
     private ProjectEntityRepository $projectEntityRepository;
     private DoctrineMapperInterface $mapper;
 
@@ -52,16 +55,25 @@ class ProjectPersistenceAdapter implements GetProjectPort
         }
     }
 
-    public function getBy(array $criteria, array $orderBy = null, int $limit = null, int $offset = null): ?array
+    /**
+     * @param array      $criteria
+     * @param array|null $orderBy
+     * @param int|null   $limit
+     * @param int|null   $offset
+     *
+     * @return array|null
+     * @throws Exception
+     */
+    public function getBy(array $criteria = [], array $orderBy = null, int $limit = null, int $offset = null): ?array
     {
         try {
-            $projectEntity = $this->projectEntityRepository->findBy($criteria, $orderBy, $limit, $offset);
+            (!$limit) ? $limit = self::DEFAULT_LIMIT : null;
+            (!$offset) ? $offset = self::DEFAULT_OFFSET : null;
+            $projectEntityArray = $this->projectEntityRepository->findBy($criteria, $orderBy, $limit, $offset);
 
-            return $this->mapper->denormalize($projectEntity, Project::class . '[]');
+            return $this->mapper->denormalize($projectEntityArray, Project::class.'[]');
         } catch (ORMException $e) {
             throw  new Exception($e->getMessage(), 500);
         }
     }
-
-
 }

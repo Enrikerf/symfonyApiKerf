@@ -3,18 +3,26 @@
 namespace App\Adapter\in\Api\Handler;
 
 use App\Application\Model\ResponseCode;
+use App\Application\Service\GetProjectsByCriteriaService;
 use App\Application\Service\GetProjectService;
 use OpenAPI\Server\Api\ProjectsApiInterface;
 use OpenAPI\Server\Model\CreateProject;
 use OpenAPI\Server\Model\Project;
 use OpenAPI\Server\Model\ProjectName;
 
+
 class ProjectControllerAdapter implements ProjectsApiInterface
 {
 
-    private GetProjectService $getProjectService;
-    public function __construct(GetProjectService $getProjectService) {
+    private GetProjectService            $getProjectService;
+    private GetProjectsByCriteriaService $getProjectsByCriteriaService;
+
+    public function __construct(
+        GetProjectService $getProjectService,
+        GetProjectsByCriteriaService $getProjectsByCriteriaService
+    ) {
         $this->getProjectService = $getProjectService;
+        $this->getProjectsByCriteriaService = $getProjectsByCriteriaService;
     }
 
     /**
@@ -24,10 +32,10 @@ class ProjectControllerAdapter implements ProjectsApiInterface
     {
         $response = $this->getProjectService->getProjectQuery($projectId);
         $responseCode = $response->getResponseCode();
-        if($responseCode === ResponseCode::OK){
+        if ($responseCode === ResponseCode::OK) {
             return $response->getMessage()[0];
-        }else{
-            return  $response->getMessage();
+        } else {
+            return $response->getMessage();
         }
     }
 
@@ -44,7 +52,13 @@ class ProjectControllerAdapter implements ProjectsApiInterface
      */
     public function projectsGet(&$responseCode, array &$responseHeaders)
     {
-        return [new Project([ 'name' => "name"])];
+        $response = $this->getProjectsByCriteriaService->getProjectQuery();
+        $responseCode = $response->getResponseCode();
+        if ($responseCode === ResponseCode::OK) {
+            return $response->getMessage()[0];
+        } else {
+            return $response->getMessage();
+        }
     }
 
     /**

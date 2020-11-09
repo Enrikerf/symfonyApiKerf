@@ -25,6 +25,7 @@ class SymfonySerializer implements DoctrineMapperInterface
     {
         $classMetadataFactory = new ClassMetadataFactory(new AnnotationLoader(new AnnotationReader()));
         $discriminator = new ClassDiscriminatorFromClassMetadata($classMetadataFactory);
+        $encoders = [new JsonEncoder()];
         $objectNormalizer = new ObjectNormalizer(
             $classMetadataFactory,
             null,
@@ -36,7 +37,9 @@ class SymfonySerializer implements DoctrineMapperInterface
             $objectNormalizer,
             new ArrayDenormalizer(),
         ];
-        $encoders = [new JsonEncoder()];
+
+
+
         $this->serializer = new Serializer($normalizers, $encoders);
     }
 
@@ -57,7 +60,7 @@ class SymfonySerializer implements DoctrineMapperInterface
                 $this->serializer->normalize($data),
                 $type
             );
-            if ($dataDenormalized instanceof $type) {
+            if ($dataDenormalized instanceof $type || is_array($dataDenormalized)) {
                 return $dataDenormalized;
             } else {
                 return null;

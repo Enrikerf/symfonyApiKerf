@@ -4,12 +4,12 @@ namespace App\Application\Service;
 
 use App\Application\Model\ResponseCode;
 use App\Application\Port\in\GetProject\GetProjectQueryResponse;
-use App\Application\Port\in\GetProject\GetProjectsQuery;
+use App\Application\Port\in\GetProject\GetProjectQuery;
 use App\Application\Port\out\Persistence\Database\GetProjectPort;
 use Exception;
 
 
-class GetProjectService implements GetProjectsQuery
+class GetProjectService implements GetProjectQuery
 {
 
     private GetProjectPort $getProjectPort;
@@ -28,6 +28,7 @@ class GetProjectService implements GetProjectsQuery
                 return new GetProjectQueryResponse(ResponseCode::NOT_FOUND, []);
             }
         } catch (Exception $e) {
+            return new GetProjectQueryResponse(ResponseCode::PERSISTENCE_EXCEPTION, [$e->getMessage()]);
         }
     }
 }

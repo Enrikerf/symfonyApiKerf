@@ -52,15 +52,16 @@ class ProjectPersistenceAdapter implements GetProjectPort
         }
     }
 
-//    public function getBy(array $criteria, array $orderBy = null, int $limit = null, int $offset = null): ?Project
-//    {
-//        try {
-//            $projectEntity = $this->projectEntityRepository->findBy($criteria, $orderBy, $limit, $offset);
-//
-//            return $this->mapper->denormalize($projectEntity, Project::class);
-//        } catch (ORMException $e) {
-//            throw  new Exception($e->getMessage(), 500);
-//        }
-//    }
+    public function getBy(array $criteria, array $orderBy = null, int $limit = null, int $offset = null): ?array
+    {
+        try {
+            $projectEntity = $this->projectEntityRepository->findBy($criteria, $orderBy, $limit, $offset);
+
+            return $this->mapper->denormalize($projectEntity, Project::class . '[]');
+        } catch (ORMException $e) {
+            throw  new Exception($e->getMessage(), 500);
+        }
+    }
+
 
 }

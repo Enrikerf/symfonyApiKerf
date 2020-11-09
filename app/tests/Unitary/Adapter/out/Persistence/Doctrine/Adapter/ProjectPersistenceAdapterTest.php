@@ -17,52 +17,68 @@ class ProjectPersistenceAdapterTest extends TestCase
 {
 
     use MockeryPHPUnitIntegration;
-    use Specify;
-    private const PROJECT_NAME = "name";
+
+    private function constructPersistenceAdapter($projectEntityRepository)
+    {
+        $mapper = SymfonySerializerBuilder::get();
+
+        return new ProjectPersistenceAdapter($projectEntityRepository, $mapper);
+    }
 
     public function testORMFailOnCreateReturnException(): void
     {
-        $projectEntityRepository = ProjectEntityRepositoryMockBuilder::getRepositoryReturnExceptionOnPersist();
-        $mapper = SymfonySerializerBuilder::get();
-        $projectPersistenceAdapter = new ProjectPersistenceAdapter($projectEntityRepository, $mapper);
+        $projectEntityRepository = ProjectEntityRepositoryMockBuilder::getReturnExceptionOnPersist();
+        $projectPersistenceAdapter = $this->constructPersistenceAdapter($projectEntityRepository);
         $this->expectException(Exception::class);
         $projectPersistenceAdapter->save(ProjectTestBuilder::getDefaultNewProject());
     }
 
     public function testOnCreateSuccessReturnProjectDomainObject(): void
     {
-        $projectEntityRepository = ProjectEntityRepositoryMockBuilder::getRepositoryReturnDefaultProjectOnPersist();
-        $mapper = SymfonySerializerBuilder::get();
-        $projectPersistenceAdapter = new ProjectPersistenceAdapter($projectEntityRepository, $mapper);
+        $projectEntityRepository = ProjectEntityRepositoryMockBuilder::getReturnDefaultProjectOnPersist();
+        $projectPersistenceAdapter = $this->constructPersistenceAdapter($projectEntityRepository);
         $projectPersisted = $projectPersistenceAdapter->save(ProjectTestBuilder::getDefaultNewProject());
         $this->assertTrue($projectPersisted->getId() == ProjectEntityTestBuilder::DEFAULT_ID);
     }
 
-    public function testORMFailOnGetReturnException(): void
+    public function testORMFailOnGetByIdReturnException(): void
     {
-        $projectEntityRepository = ProjectEntityRepositoryMockBuilder::getRepositoryReturnExceptionOnFind();
-        $mapper = SymfonySerializerBuilder::get();
-        $projectPersistenceAdapter = new ProjectPersistenceAdapter($projectEntityRepository, $mapper);
+        $projectEntityRepository = ProjectEntityRepositoryMockBuilder::getReturnExceptionOnFind();
+        $projectPersistenceAdapter = $this->constructPersistenceAdapter($projectEntityRepository);
         $this->expectException(Exception::class);
         $projectPersistenceAdapter->get(ProjectTestBuilder::PROJECT_ID);
     }
 
-    public function testOnGetSuccessReturnProjectDomainObject(): void
+    public function testOnGetByIdSuccessReturnProjectDomainObject(): void
     {
-        $projectEntityRepository = ProjectEntityRepositoryMockBuilder::getRepositoryReturnDefaultProjectOnFind();
-        $mapper = SymfonySerializerBuilder::get();
-        $projectPersistenceAdapter = new ProjectPersistenceAdapter($projectEntityRepository, $mapper);
+        $projectEntityRepository = ProjectEntityRepositoryMockBuilder::getReturnDefaultProjectOnFind();
+        $projectPersistenceAdapter = $this->constructPersistenceAdapter($projectEntityRepository);
         $project = $projectPersistenceAdapter->get(ProjectTestBuilder::PROJECT_ID);
         $this->assertTrue($project->getId() == ProjectEntityTestBuilder::DEFAULT_ID);
     }
 
-    public function testOnGetNotFoundReturnNull(): void
+    public function testOnGetByIdNotFoundReturnNull(): void
     {
-        $projectEntityRepository = ProjectEntityRepositoryMockBuilder::getRepositoryReturnNullOnFind();
+        $projectEntityRepository = ProjectEntityRepositoryMockBuilder::getReturnNullOnFind();
         $mapper = SymfonySerializerBuilder::get();
         $projectPersistenceAdapter = new ProjectPersistenceAdapter($projectEntityRepository, $mapper);
         $project = $projectPersistenceAdapter->get(ProjectTestBuilder::PROJECT_ID);
         $this->assertNull($project);
     }
 
+    public function testORMFailOnGetByCriteriaReturnException(): void
+    {
+        $projectEntityRepository = ProjectEntityRepositoryMockBuilder::getReturnExceptionOnGetBy();
+        $projectPersistenceAdapter = $this->constructPersistenceAdapter($projectEntityRepository);
+        $this->expectException(Exception::class);
+        $projectPersistenceAdapter->getBy([]);
+    }
+
+    public function testOnGetByCriteriaSuccessReturnArrayOfProjectDomainObject(): void
+    {
+        $projectEntityRepository = ProjectEntityRepositoryMockBuilder::getReturnArrayOfProjectOnGetBy();
+        $projectPersistenceAdapter = $this->constructPersistenceAdapter($projectEntityRepository);
+        $projects = $projectPersistenceAdapter->getBy([]);
+        $this->assertIsArray($projects);
+    }
 }

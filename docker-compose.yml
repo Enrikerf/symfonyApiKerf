@@ -9,7 +9,7 @@ services:
       - 80:80
       - 9009:9009
   php-fpm:
-    image: enrikerf/php-fpm-xdebug:latest
+    image: enrikerf/php-fpm:latest
     ports:
       - "9000:9000"
     volumes:

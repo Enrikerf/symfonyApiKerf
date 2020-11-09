@@ -2,7 +2,7 @@
 
 namespace App\Tests\Unitary\Domain\Project;
 
-use App\Tests\Unitary\Builders\ProjectTestBuilder;
+
 use Codeception\Specify;
 use PHPUnit\Framework\TestCase;
 
@@ -15,7 +15,7 @@ class ProjectTest extends TestCase
 
     private function getProjectBuilder()
     {
-        return ProjectTestBuilder::getExamBuilder();
+        return ProjectTestBuilder::getProjectTest();
     }
 
     public function testProjectConstructor(): void

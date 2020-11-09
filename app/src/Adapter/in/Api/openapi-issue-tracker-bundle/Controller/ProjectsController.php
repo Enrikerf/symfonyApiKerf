@@ -58,6 +58,8 @@ class ProjectsController extends Controller
      * Find project by ID
      *
      * @param Request $request The Symfony request to handle.
+     * @param         $projectId
+     *
      * @return Response The Symfony response.
      */
     public function projectProjectIdGetAction(Request $request, $projectId)

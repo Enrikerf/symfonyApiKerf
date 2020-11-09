@@ -2,6 +2,8 @@
 
 namespace App\Adapter\in\Api\Handler;
 
+use App\Application\Model\ResponseCode;
+use App\Application\Service\GetProjectService;
 use OpenAPI\Server\Api\ProjectsApiInterface;
 use OpenAPI\Server\Model\CreateProject;
 use OpenAPI\Server\Model\Project;
@@ -10,12 +12,23 @@ use OpenAPI\Server\Model\ProjectName;
 class ProjectControllerAdapter implements ProjectsApiInterface
 {
 
+    private GetProjectService $getProjectService;
+    public function __construct(GetProjectService $getProjectService) {
+        $this->getProjectService = $getProjectService;
+    }
+
     /**
      * @inheritDoc
      */
     public function projectProjectIdGet($projectId, &$responseCode, array &$responseHeaders)
     {
-        return new Project(['id' => 1, 'name' => "name"]);
+        $response = $this->getProjectService->getProjectQuery($projectId);
+        $responseCode = $response->getResponseCode();
+        if($responseCode === ResponseCode::OK){
+            return $response->getMessage()[0];
+        }else{
+            return  $response->getMessage();
+        }
     }
 
     /**

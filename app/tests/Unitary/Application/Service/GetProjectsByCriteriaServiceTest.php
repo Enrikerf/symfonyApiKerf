@@ -5,11 +5,10 @@ namespace App\Tests\Unitary\Application\Service;
 use App\Adapter\out\Persistence\Doctrine\Adapter\ProjectPersistenceAdapter;
 use App\Application\Model\ResponseCode;
 use App\Application\Service\GetProjectsByCriteriaService;
-use App\Application\Service\GetProjectService;
 use App\Domain\Project\Project;
 use App\Tests\Unitary\Adapter\out\Persistence\Doctrine\Repository\ProjectEntityRepositoryMockBuilder;
-use App\Tests\Unitary\Adapter\out\Serializer\SymfonySerializerBuilder;
-use App\Tests\Unitary\Domain\Project\ProjectTestBuilder;
+use App\Tests\Unitary\Adapter\out\Serializer\SymfonySerializerMockBuilder;
+use App\Tests\Unitary\Adapter\out\Serializer\SymfonySerializerTestBuilder;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
 
@@ -21,7 +20,7 @@ class GetProjectsByCriteriaServiceTest extends TestCase
 
     private function constructPersistenceAdapter($projectEntityRepository)
     {
-        $mapper = SymfonySerializerBuilder::get();
+        $mapper = SymfonySerializerTestBuilder::get();
 
         return new ProjectPersistenceAdapter($projectEntityRepository, $mapper);
     }
@@ -33,7 +32,7 @@ class GetProjectsByCriteriaServiceTest extends TestCase
 
     private function constructPersistenceAdapterWithErrorOnSerializer($projectEntityRepository)
     {
-        $mapper = SymfonySerializerBuilder::getMockWithDenormalizeReturnNull();
+        $mapper = SymfonySerializerMockBuilder::getMockWithDenormalizeReturnNull();
 
         return new ProjectPersistenceAdapter($projectEntityRepository, $mapper);
     }

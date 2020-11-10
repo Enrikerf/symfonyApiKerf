@@ -9,10 +9,11 @@ use phpDocumentor\Reflection\Types\Self_;
 class ProjectTestBuilder
 {
 
-    const PROJECT_NAME = "defaultName";
-    const PROJECT_ID = 1;
-    private string $name;
-    private int    $id;
+    const DEFAULT_PROJECT_NAME = "defaultName";
+    const DEFAULT_PROJECT_ID = 1;
+    private ?string $name       = null;
+    private ?int    $id         = null;
+    private ?int    $issueCount = null;
 
     public static function getProjectTest()
     {
@@ -21,12 +22,12 @@ class ProjectTestBuilder
 
     public static function getDefaultNewProject()
     {
-        return new Project(self::PROJECT_NAME);
+        return new Project(self::DEFAULT_PROJECT_NAME);
     }
 
     public static function getDefaultPersistedProject()
     {
-        return self::getProjectTest()->name(self::PROJECT_NAME)->id(self::PROJECT_ID)->build();
+        return self::getProjectTest()->name(self::DEFAULT_PROJECT_NAME)->id(self::DEFAULT_PROJECT_ID)->build();
     }
 
     public function name($string)
@@ -45,6 +46,10 @@ class ProjectTestBuilder
 
     public function build()
     {
-        return new Project($this->name);
+        $project = new Project($this->name);
+        ($this->id) ? $project->setId($this->id) : null;
+        ($this->issueCount) ? $project->setIssueCount($this->issueCount) : null;
+
+        return $project;
     }
 }

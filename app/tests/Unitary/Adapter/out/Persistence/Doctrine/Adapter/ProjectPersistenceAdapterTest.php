@@ -5,9 +5,8 @@ namespace App\Tests\Unitary\Adapter\out\Persistence\Doctrine\Adapter;
 use App\Adapter\out\Persistence\Doctrine\Adapter\ProjectPersistenceAdapter;
 use App\Tests\Unitary\Adapter\out\Persistence\Doctrine\Entity\ProjectEntityTestBuilder;
 use App\Tests\Unitary\Adapter\out\Persistence\Doctrine\Repository\ProjectEntityRepositoryMockBuilder;
-use App\Tests\Unitary\Adapter\out\Serializer\SymfonySerializerBuilder;
+use App\Tests\Unitary\Adapter\out\Serializer\SymfonySerializerTestBuilder;
 use App\Tests\Unitary\Domain\Project\ProjectTestBuilder;
-use Codeception\Specify;
 use Exception;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
@@ -20,7 +19,7 @@ class ProjectPersistenceAdapterTest extends TestCase
 
     private function constructPersistenceAdapter($projectEntityRepository)
     {
-        $mapper = SymfonySerializerBuilder::get();
+        $mapper = SymfonySerializerTestBuilder::get();
 
         return new ProjectPersistenceAdapter($projectEntityRepository, $mapper);
     }
@@ -46,23 +45,23 @@ class ProjectPersistenceAdapterTest extends TestCase
         $projectEntityRepository = ProjectEntityRepositoryMockBuilder::getReturnExceptionOnFind();
         $projectPersistenceAdapter = $this->constructPersistenceAdapter($projectEntityRepository);
         $this->expectException(Exception::class);
-        $projectPersistenceAdapter->get(ProjectTestBuilder::PROJECT_ID);
+        $projectPersistenceAdapter->get(ProjectTestBuilder::DEFAULT_PROJECT_ID);
     }
 
     public function testOnGetByIdSuccessReturnProjectDomainObject(): void
     {
         $projectEntityRepository = ProjectEntityRepositoryMockBuilder::getReturnDefaultProjectOnFind();
         $projectPersistenceAdapter = $this->constructPersistenceAdapter($projectEntityRepository);
-        $project = $projectPersistenceAdapter->get(ProjectTestBuilder::PROJECT_ID);
+        $project = $projectPersistenceAdapter->get(ProjectTestBuilder::DEFAULT_PROJECT_ID);
         $this->assertTrue($project->getId() == ProjectEntityTestBuilder::DEFAULT_ID);
     }
 
     public function testOnGetByIdNotFoundReturnNull(): void
     {
         $projectEntityRepository = ProjectEntityRepositoryMockBuilder::getReturnNullOnFind();
-        $mapper = SymfonySerializerBuilder::get();
+        $mapper = SymfonySerializerTestBuilder::get();
         $projectPersistenceAdapter = new ProjectPersistenceAdapter($projectEntityRepository, $mapper);
-        $project = $projectPersistenceAdapter->get(ProjectTestBuilder::PROJECT_ID);
+        $project = $projectPersistenceAdapter->get(ProjectTestBuilder::DEFAULT_PROJECT_ID);
         $this->assertNull($project);
     }
 

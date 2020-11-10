@@ -5,6 +5,7 @@ namespace App\Adapter\out\Persistence\Doctrine\Adapter;
 use App\Adapter\out\Persistence\Doctrine\Entity\ProjectEntity;
 use App\Adapter\out\Persistence\Doctrine\Mapper\DoctrineMapperInterface;
 use App\Adapter\out\Persistence\Doctrine\Repository\ProjectEntityRepository;
+use App\Application\Port\out\Persistence\Database\CreateProjectPort;
 use App\Application\Port\out\Persistence\Database\GetProjectPort;
 use App\Application\Port\out\Persistence\Database\GetProjectsByPort;
 use App\Domain\Project\Project;
@@ -12,7 +13,7 @@ use Doctrine\ORM\ORMException;
 use Exception;
 
 
-class ProjectPersistenceAdapter implements GetProjectPort, GetProjectsByPort
+class ProjectPersistenceAdapter implements GetProjectPort, GetProjectsByPort, CreateProjectPort
 {
 
     private const DEFAULT_OFFSET = 0;
@@ -26,7 +27,13 @@ class ProjectPersistenceAdapter implements GetProjectPort, GetProjectsByPort
         $this->mapper = $mapper;
     }
 
-    public function save(Project $project): Project
+    /**
+     * @param Project $project
+     *
+     * @return Project
+     * @throws Exception
+     */
+    public function save(Project $project): ?Project
     {
         try {
             $projectEntity = $this->mapper->denormalize($project, ProjectEntity::class);

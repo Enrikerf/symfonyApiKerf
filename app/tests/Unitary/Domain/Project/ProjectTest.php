@@ -2,7 +2,6 @@
 
 namespace App\Tests\Unitary\Domain\Project;
 
-
 use Codeception\Specify;
 use PHPUnit\Framework\TestCase;
 
@@ -18,17 +17,11 @@ class ProjectTest extends TestCase
         return ProjectTestBuilder::getProjectTest();
     }
 
-    public function testProjectConstructor(): void
+    public function testConstructorAreConsistentIdNullAndNameNotNull(): void
     {
-        $this->describe("Project constructor consistencia",
-            function () {
-                $this->should("id = null, name != null",
-                    function () {
-                        $project = $this->getProjectBuilder()->name(self::PROJECT_NAME)->build();
-                        $this->assertNull($project->getId());
-                        $this->assertEquals($project->getName(), self::PROJECT_NAME);
-                        $this->assertEquals($project->getIssueCount(), 0);
-                    });
-            });
+        $project = $this->getProjectBuilder()->name(self::PROJECT_NAME)->build();
+        $this->assertNull($project->getId());
+        $this->assertEquals($project->getName(), self::PROJECT_NAME);
+        $this->assertEquals($project->getIssueCount(), 0);
     }
 }

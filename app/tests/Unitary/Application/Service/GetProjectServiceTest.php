@@ -7,7 +7,7 @@ use App\Application\Model\ResponseCode;
 use App\Application\Service\GetProjectService;
 use App\Domain\Project\Project;
 use App\Tests\Unitary\Adapter\out\Persistence\Doctrine\Repository\ProjectEntityRepositoryMockBuilder;
-use App\Tests\Unitary\Adapter\out\Serializer\SymfonySerializerBuilder;
+use App\Tests\Unitary\Adapter\out\Serializer\SymfonySerializerTestBuilder;
 use App\Tests\Unitary\Domain\Project\ProjectTestBuilder;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
@@ -20,7 +20,7 @@ class GetProjectServiceTest extends TestCase
 
     private function constructPersistenceAdapter($projectEntityRepository)
     {
-        $mapper = SymfonySerializerBuilder::get();
+        $mapper = SymfonySerializerTestBuilder::get();
 
         return new ProjectPersistenceAdapter($projectEntityRepository, $mapper);
     }
@@ -34,7 +34,7 @@ class GetProjectServiceTest extends TestCase
     {
         $persistenceAdapter = $this->constructPersistenceAdapter(ProjectEntityRepositoryMockBuilder::getReturnExceptionOnFind());
         $getProjectService = $this->constructGetProjectService($persistenceAdapter);
-        $return = $getProjectService->getProjectQuery(ProjectTestBuilder::PROJECT_ID);
+        $return = $getProjectService->getProjectQuery(ProjectTestBuilder::DEFAULT_PROJECT_ID);
         $this->assertEquals($return->getResponseCode(), ResponseCode::PERSISTENCE_EXCEPTION);
     }
 
@@ -42,7 +42,7 @@ class GetProjectServiceTest extends TestCase
     {
         $persistenceAdapter = $this->constructPersistenceAdapter(ProjectEntityRepositoryMockBuilder::getReturnNullOnFind());
         $getProjectService = $this->constructGetProjectService($persistenceAdapter);
-        $return = $getProjectService->getProjectQuery(ProjectTestBuilder::PROJECT_ID);
+        $return = $getProjectService->getProjectQuery(ProjectTestBuilder::DEFAULT_PROJECT_ID);
         $this->assertEquals($return->getResponseCode(), ResponseCode::NOT_FOUND);
     }
 
@@ -50,7 +50,7 @@ class GetProjectServiceTest extends TestCase
     {
         $persistenceAdapter = $this->constructPersistenceAdapter(ProjectEntityRepositoryMockBuilder::getReturnDefaultProjectOnFind());
         $getProjectService = $this->constructGetProjectService($persistenceAdapter);
-        $return = $getProjectService->getProjectQuery(ProjectTestBuilder::PROJECT_ID);
+        $return = $getProjectService->getProjectQuery(ProjectTestBuilder::DEFAULT_PROJECT_ID);
         $this->assertEquals($return->getResponseCode(), ResponseCode::OK);
         $this->assertInstanceOf(Project::class,$return->getMessage()[0]);
     }

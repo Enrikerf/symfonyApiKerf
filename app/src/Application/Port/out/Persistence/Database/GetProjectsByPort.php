@@ -16,6 +16,7 @@ interface GetProjectsByPort
      * @param int|null   $offset
      *
      * @return array|null
+     * @throws Exception
      */
     public function getBy(array $criteria = [], array $orderBy = null, int $limit = null, int $offset = null): ?array;
 }

@@ -6,13 +6,10 @@ use App\Adapter\out\Serializer\SymfonySerializer;
 use Mockery;
 
 
-class SymfonySerializerBuilder
+class SymfonySerializerMockBuilder
 {
 
-    public static function get()
-    {
-        return (new SymfonySerializer());
-    }
+
 
     public static function getMockWithDenormalizeReturnNull()
     {

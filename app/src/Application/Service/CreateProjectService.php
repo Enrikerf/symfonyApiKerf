@@ -3,6 +3,7 @@
 namespace App\Application\Service;
 
 use App\Application\Model\ResponseCode;
+use App\Application\Port\in\CreateProject\CreateProjectUseCase;
 use App\Application\Port\in\CreateProject\CreateProjectCommand;
 use App\Application\Port\in\CreateProject\CreateProjectResponse;
 use App\Application\Port\in\GetProject\GetProjectQueryResponse;
@@ -13,7 +14,7 @@ use App\Domain\Project\Project;
 use Exception;
 
 
-class CreateProjectService
+class CreateProjectService implements CreateProjectUseCase
 {
 
     private CreateProjectPort $createProjectPort;
@@ -23,7 +24,7 @@ class CreateProjectService
         $this->createProjectPort = $createProjectPort;
     }
 
-    public function createProject(CreateProjectCommand $createProjectCommand): CreateProjectResponse
+    public function create(CreateProjectCommand $createProjectCommand): CreateProjectResponse
     {
         try {
             $project = new Project($createProjectCommand->getName());

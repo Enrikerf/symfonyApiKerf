@@ -4,9 +4,10 @@ namespace App\Adapter\in\Api\Handler;
 
 use App\Application\Model\ResponseCode;
 use App\Application\Port\in\CreateProject\CreateProjectCommand;
+use App\Application\Port\in\CreateProject\CreateProjectUseCase;
+use App\Application\Port\in\GetProject\GetProjectQuery;
+use App\Application\Port\in\GetProjectsBy\GetProjectsByQuery;
 use App\Application\Service\CreateProjectService;
-use App\Application\Service\GetProjectsByCriteriaService;
-use App\Application\Service\GetProjectService;
 use OpenAPI\Server\Api\ProjectsApiInterface;
 use OpenAPI\Server\Model\CreateProject;
 use OpenAPI\Server\Model\Project;
@@ -16,14 +17,14 @@ use OpenAPI\Server\Model\ProjectName;
 class ProjectControllerAdapter implements ProjectsApiInterface
 {
 
-    private GetProjectService            $getProjectService;
-    private GetProjectsByCriteriaService $getProjectsByCriteriaService;
-    private CreateProjectService         $createProjectService;
+    private GetProjectQuery            $getProjectService;
+    private GetProjectsByQuery $getProjectsByCriteriaService;
+    private CreateProjectUseCase         $createProjectService;
 
     public function __construct(
-        GetProjectService $getProjectService,
-        GetProjectsByCriteriaService $getProjectsByCriteriaService,
-        CreateProjectService $createProjectService
+        GetProjectQuery $getProjectService,
+        GetProjectsByQuery $getProjectsByCriteriaService,
+        CreateProjectUseCase $createProjectService
     ) {
         $this->getProjectService = $getProjectService;
         $this->getProjectsByCriteriaService = $getProjectsByCriteriaService;
@@ -72,7 +73,7 @@ class ProjectControllerAdapter implements ProjectsApiInterface
     public function projectsPost(CreateProject $createProject, &$responseCode, array &$responseHeaders)
     {
         $createProjectCommand = new CreateProjectCommand($createProject->getTitle());
-        $response = $this->createProjectService->createProject($createProjectCommand);
+        $response = $this->createProjectService->create($createProjectCommand);
         $responseCode = $response->getResponseCode();
         if ($responseCode === ResponseCode::OBJECT_CREATED) {
             return $response->getMessage()[0];

@@ -4,6 +4,7 @@ namespace App\Adapter\out\Persistence\Doctrine\Entity;
 
 use App\Adapter\out\Persistence\Doctrine\Repository;
 use Doctrine\ORM\Mapping as ORM;
+use ReflectionClass;
 
 
 /**
@@ -87,4 +88,6 @@ class ProjectEntity
 
         return $this;
     }
+
+
 }

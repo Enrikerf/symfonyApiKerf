@@ -106,7 +106,7 @@ class ProjectPersistenceAdapterTest extends TestCase
     {
         $projectEntityRepository = ProjectEntityRepositoryMockBuilder::getReturnArrayOfProjectOnFindBy();
         $mapperMock = SymfonySerializerMockBuilder::getExceptionOnDenormalize();
-        $projectPersistenceAdapter = $this->constructPersistenceAdapter($projectEntityRepository,$mapperMock);
+        $projectPersistenceAdapter = $this->constructPersistenceAdapter($projectEntityRepository, $mapperMock);
         $this->expectException(Exception::class);
         $this->expectExceptionCode(ProjectPersistenceAdapter::ORM_EXCEPTION);
         $projectPersistenceAdapter->getBy([]);
@@ -119,5 +119,37 @@ class ProjectPersistenceAdapterTest extends TestCase
         $projects = $projectPersistenceAdapter->getBy([]);
         $this->assertIsArray($projects);
         $this->assertTrue($projects[0] instanceof Project);
+    }
+
+    public function testUpdateThrowExceptionWithOrmExceptionCodeOnORMException()
+    {
+        $projectEntityRepository = ProjectEntityRepositoryMockBuilder::getReturnExceptionOnPersist();
+        $projectPersistenceAdapter = $this->constructPersistenceAdapter($projectEntityRepository);
+        $this->expectException(Exception::class);
+        $this->expectExceptionCode(ProjectPersistenceAdapter::ORM_EXCEPTION);
+        $project = ProjectTestBuilder::getDefaultNewProject();
+        $projectPersistenceAdapter->update($project);
+    }
+
+    public function testUpdateThrowExceptionWithORMExceptionCodeOnSerializerException(): void
+    {
+        $projectEntityRepository = ProjectEntityRepositoryMockBuilder::getReturnDefaultProjectOnPersist();
+        $mapperMock = SymfonySerializerMockBuilder::getExceptionOnDenormalize();
+        $projectPersistenceAdapter = $this->constructPersistenceAdapter($projectEntityRepository, $mapperMock);
+        $this->expectException(Exception::class);
+        $this->expectExceptionCode(ProjectPersistenceAdapter::ORM_EXCEPTION);
+        $project = ProjectTestBuilder::getDefaultNewProject();
+        $projectPersistenceAdapter->update($project);
+    }
+
+    public function testUpdateReturnProjectDomainObjectOnSuccessWithModifiedVars(): void
+    {
+        $projectEntityRepository = ProjectEntityRepositoryMockBuilder::getReturnDefaultProjectOnUpdate();
+        $projectPersistenceAdapter = $this->constructPersistenceAdapter($projectEntityRepository);
+        $project = ProjectTestBuilder::getDefaultPersistedProject();
+        $project->setName(ProjectEntityTestBuilder::NOT_DEFAULT_NAME);
+        $projectPersistenceAdapter->update($project);
+        $this->assertTrue($project->getId() == ProjectEntityTestBuilder::DEFAULT_ID);
+        $this->assertEquals($project->getName(), ProjectEntityTestBuilder::NOT_DEFAULT_NAME);
     }
 }

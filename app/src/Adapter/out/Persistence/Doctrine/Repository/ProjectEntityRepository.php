@@ -32,4 +32,5 @@ class ProjectEntityRepository extends ServiceEntityRepository
 
         return $project;
     }
+
 }

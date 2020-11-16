@@ -29,6 +29,27 @@ class ProjectEntityRepositoryMockBuilder
         return $projectEntityRepository;
     }
 
+    public static function getReturnDefaultProjectOnUpdate()
+    {
+        $projectEntityRepository = Mockery::mock(ProjectEntityRepository::class);
+        $projectEntityRepository->allows([
+            'persistAndFlush' =>ProjectEntityTestBuilder::getDefaultProject(),
+            'find' =>ProjectEntityTestBuilder::getDefaultProject()
+        ])
+         ;
+
+        return $projectEntityRepository;
+    }
+
+    public static function getReturnExceptionOnUpdate()
+    {
+        $projectEntityRepository = (Mockery::mock(ProjectEntityRepository::class));
+        $projectEntityRepository->shouldReceive(['persistAndFlush','find'])
+            ->andThrow(ORMException::class);
+
+        return $projectEntityRepository;
+    }
+
     public static function getReturnExceptionOnFind()
     {
         $projectEntityRepository = (Mockery::mock(ProjectEntityRepository::class));

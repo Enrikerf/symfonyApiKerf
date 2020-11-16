@@ -12,14 +12,6 @@ use Exception;
 class CreateProjectPortMockBuilder
 {
 
-    public static function getReturnNullOnSave(): CreateProjectPort
-    {
-        $mock = Mockery::mock(CreateProjectPort::class);
-        $mock->shouldReceive('save')->andReturn(null);
-
-        return $mock;
-    }
-
     public static function getReturnProjectPersistedOnSave(): CreateProjectPort
     {
         $mock = Mockery::mock(CreateProjectPort::class);

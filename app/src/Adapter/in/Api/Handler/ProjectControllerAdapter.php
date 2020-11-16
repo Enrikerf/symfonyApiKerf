@@ -7,6 +7,8 @@ use App\Application\Port\in\CreateProject\CreateProjectCommand;
 use App\Application\Port\in\CreateProject\CreateProjectUseCase;
 use App\Application\Port\in\GetProject\GetProjectQuery;
 use App\Application\Port\in\GetProjectsBy\GetProjectsByQuery;
+use App\Application\Port\in\UpdateProject\UpdateProjectCommand;
+use App\Application\Port\in\UpdateProject\UpdateProjectUseCase;
 use App\Application\Service\CreateProjectService;
 use OpenAPI\Server\Api\ProjectsApiInterface;
 use OpenAPI\Server\Model\CreateProject;
@@ -17,18 +19,21 @@ use OpenAPI\Server\Model\ProjectName;
 class ProjectControllerAdapter implements ProjectsApiInterface
 {
 
-    private GetProjectQuery            $getProjectService;
-    private GetProjectsByQuery $getProjectsByCriteriaService;
+    private GetProjectQuery              $getProjectService;
+    private GetProjectsByQuery           $getProjectsByCriteriaService;
     private CreateProjectUseCase         $createProjectService;
+    private UpdateProjectUseCase         $updateProjectService;
 
     public function __construct(
         GetProjectQuery $getProjectService,
         GetProjectsByQuery $getProjectsByCriteriaService,
-        CreateProjectUseCase $createProjectService
+        CreateProjectUseCase $createProjectService,
+        UpdateProjectUseCase $updateProjectService
     ) {
         $this->getProjectService = $getProjectService;
         $this->getProjectsByCriteriaService = $getProjectsByCriteriaService;
         $this->createProjectService = $createProjectService;
+        $this->updateProjectService = $updateProjectService;
     }
 
     /**
@@ -50,7 +55,14 @@ class ProjectControllerAdapter implements ProjectsApiInterface
      */
     public function projectProjectIdPut($projectId, ProjectName $projectName, &$responseCode, array &$responseHeaders)
     {
-        return new Project(['id' => 1, 'name' => "name"]);
+        $updateProjectCommand = new UpdateProjectCommand($projectId, $projectName->getName());
+        $response = $this->updateProjectService->update($updateProjectCommand);
+        $responseCode = $response->getResponseCode();
+        if ($responseCode === ResponseCode::OK) {
+            return $response->getMessage()[0];
+        } else {
+            return $response->getMessage();
+        }
     }
 
     /**

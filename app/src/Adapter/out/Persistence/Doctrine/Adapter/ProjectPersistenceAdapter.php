@@ -8,13 +8,14 @@ use App\Adapter\out\Persistence\Doctrine\Repository\ProjectEntityRepository;
 use App\Application\Port\out\Persistence\Database\CreateProjectPort;
 use App\Application\Port\out\Persistence\Database\GetProjectPort;
 use App\Application\Port\out\Persistence\Database\GetProjectsByPort;
+use App\Application\Port\out\Persistence\Database\UpdateProjectPort;
 use App\Domain\Project\Project;
-use Doctrine\ORM\ORMException;
 use Exception;
-use Symfony\Component\Serializer\Exception\ExceptionInterface;
+use ReflectionClass;
+use ReflectionException;
 
 
-class ProjectPersistenceAdapter implements GetProjectPort, GetProjectsByPort, CreateProjectPort
+class ProjectPersistenceAdapter implements GetProjectPort, GetProjectsByPort, CreateProjectPort, UpdateProjectPort
 {
 
     public const ORM_EXCEPTION = 500;
@@ -85,5 +86,30 @@ class ProjectPersistenceAdapter implements GetProjectPort, GetProjectsByPort, Cr
         } catch (Exception $e) {
             throw  new Exception($e->getMessage(), self::ORM_EXCEPTION);
         }
+    }
+
+    /**
+     * @param Project $project
+     *
+     * @throws Exception
+     */
+    public function update(Project &$project): void
+    {
+        try {
+            $projectEntity = $this->mapper->denormalize($project, ProjectEntity::class);
+            /** @var ProjectEntity $projectEntityInDb */
+            $projectEntityInDb = $this->projectEntityRepository->find($projectEntity->getId());
+            $this->updateContent($projectEntityInDb, $projectEntity);
+            $this->projectEntityRepository->persistAndFlush($projectEntityInDb);
+            $project = $this->mapper->denormalize($projectEntityInDb, Project::class);
+        } catch (Exception $e) {
+            throw  new Exception($e->getMessage(), self::ORM_EXCEPTION);
+        }
+    }
+
+    private function updateContent(ProjectEntity &$projectEntityInDb, ProjectEntity $newProjectEntityData)
+    {
+        $newProjectEntityData->getName() ? $projectEntityInDb->setName($newProjectEntityData->getName()) : null;
+        $newProjectEntityData->getIssueCount() ? $projectEntityInDb->setIssueCount($newProjectEntityData->getIssueCount()) : null;
     }
 }

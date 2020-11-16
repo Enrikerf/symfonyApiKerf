@@ -22,15 +22,16 @@ class GetProjectsByCriteriaService implements GetProjectsByQuery
         $this->getProjectsByPort = $getProjectsByPort;
     }
 
-    public function getProjectQuery(array $criteria = [], array $orderBy = null, int $limit = null, int $offset = null): GetProjectsByQueryResponse
-    {
+    public function getProjectQuery(
+        array $criteria = [],
+        array $orderBy = null,
+        int $limit = null,
+        int $offset = null
+    ): GetProjectsByQueryResponse {
         try {
-            $response = $this->getProjectsByPort->getBy($criteria,$orderBy,$limit,$offset);
-            if (is_array($response)) {
-                return new GetProjectsByQueryResponse(ResponseCode::OK, [$response]);
-            } else {
-                return new GetProjectsByQueryResponse(ResponseCode::DOMAIN_EXCEPTION, []);
-            }
+            $response = $this->getProjectsByPort->getBy($criteria, $orderBy, $limit, $offset);
+
+            return new GetProjectsByQueryResponse(ResponseCode::OK, [$response]);
         } catch (Exception $e) {
             return new GetProjectsByQueryResponse(ResponseCode::PERSISTENCE_EXCEPTION, [$e->getMessage()]);
         }

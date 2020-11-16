@@ -28,11 +28,9 @@ class CreateProjectService implements CreateProjectUseCase
     {
         try {
             $project = new Project($createProjectCommand->getName());
-            if (!$projectPersisted = $this->createProjectPort->save($project)) {
-                return new CreateProjectResponse(ResponseCode::PERSISTENCE_EXCEPTION, []);
-            }
+            $this->createProjectPort->save($project);
 
-            return new CreateProjectResponse(ResponseCode::OBJECT_CREATED, [$projectPersisted]);
+            return new CreateProjectResponse(ResponseCode::OBJECT_CREATED, [$project]);
         } catch (Exception $e) {
             return new CreateProjectResponse(ResponseCode::PERSISTENCE_EXCEPTION, []);
         }

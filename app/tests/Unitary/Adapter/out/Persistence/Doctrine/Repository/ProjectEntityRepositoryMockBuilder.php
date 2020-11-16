@@ -56,7 +56,7 @@ class ProjectEntityRepositoryMockBuilder
         return $projectEntityRepository;
     }
 
-    public static function getReturnExceptionOnGetBy()
+    public static function getReturnExceptionOnFindBy()
     {
         $projectEntityRepository = (Mockery::mock(ProjectEntityRepository::class));
         $projectEntityRepository->shouldReceive('findBy')
@@ -65,7 +65,7 @@ class ProjectEntityRepositoryMockBuilder
         return $projectEntityRepository;
     }
 
-    public static function getReturnArrayOfProjectOnGetBy()
+    public static function getReturnArrayOfProjectOnFindBy()
     {
         $projectEntityRepository = (Mockery::mock(ProjectEntityRepository::class));
         $projectEntityRepository->shouldReceive('findBy')

@@ -9,6 +9,7 @@ use App\Domain\Project\Project;
 use App\Tests\Unitary\Adapter\out\Persistence\Doctrine\Repository\ProjectEntityRepositoryMockBuilder;
 use App\Tests\Unitary\Adapter\out\Serializer\SymfonySerializerMockBuilder;
 use App\Tests\Unitary\Adapter\out\Serializer\SymfonySerializerTestBuilder;
+use App\Tests\Unitary\Application\Port\out\Persistence\Database\GetProjectsByPortMockBuilder;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
 
@@ -18,48 +19,24 @@ class GetProjectsByCriteriaServiceTest extends TestCase
 
     use MockeryPHPUnitIntegration;
 
-    private function constructPersistenceAdapter($projectEntityRepository)
+    private function getTestedClass($portMock)
     {
-        $mapper = SymfonySerializerTestBuilder::get();
-
-        return new ProjectPersistenceAdapter($projectEntityRepository, $mapper);
-    }
-
-    private function constructGetProjectService($persistenceAdapter)
-    {
-        return new GetProjectsByCriteriaService($persistenceAdapter);
-    }
-
-    private function constructPersistenceAdapterWithErrorOnSerializer($projectEntityRepository)
-    {
-        $mapper = SymfonySerializerMockBuilder::getMockWithDenormalizeReturnNull();
-
-        return new ProjectPersistenceAdapter($projectEntityRepository, $mapper);
+        return new GetProjectsByCriteriaService($portMock);
     }
 
     public function testGetProjectsByCriteriaQueryReturnServerErrorCodeOnPortException(): void
     {
-        $persistenceAdapter = $this->constructPersistenceAdapter(ProjectEntityRepositoryMockBuilder::getReturnExceptionOnGetBy());
-        $getProjectService = $this->constructGetProjectService($persistenceAdapter);
+        $getProjectService = $this->getTestedClass(GetProjectsByPortMockBuilder::getExceptionOnGetBy());
         $return = $getProjectService->getProjectQuery([]);
         $this->assertEquals($return->getResponseCode(), ResponseCode::PERSISTENCE_EXCEPTION);
     }
 
-    public function testGetProjectsByCriteriaQueryReturnServerErrorCodeOnSerializerError(): void
-    {
-        $persistenceAdapter = $this->constructPersistenceAdapterWithErrorOnSerializer(ProjectEntityRepositoryMockBuilder::getReturnExceptionOnGetBy());
-        $getProjectService = $this->constructGetProjectService($persistenceAdapter);
-        $return = $getProjectService->getProjectQuery([]);
-        $this->assertEquals($return->getResponseCode(), ResponseCode::DOMAIN_EXCEPTION);
-    }
-
     public function testGetProjectsByCriteriaQueryReturnOkCodeOnSuccessAndArrayOfProjectsOnMessageResponse(): void
     {
-        $persistenceAdapter = $this->constructPersistenceAdapter(ProjectEntityRepositoryMockBuilder::getReturnArrayOfProjectOnGetBy());
-        $getProjectService = $this->constructGetProjectService($persistenceAdapter);
+        $getProjectService = $this->getTestedClass(GetProjectsByPortMockBuilder::getArray());
         $return = $getProjectService->getProjectQuery([]);
         $this->assertEquals($return->getResponseCode(), ResponseCode::OK);
         $this->assertIsArray($return->getMessage());
-        $this->assertInstanceOf(Project::class,$return->getMessage()[0][0] );
+        $this->assertInstanceOf(Project::class, $return->getMessage()[0][0]);
     }
 }

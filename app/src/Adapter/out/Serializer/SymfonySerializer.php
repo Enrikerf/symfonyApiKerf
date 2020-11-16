@@ -4,6 +4,7 @@ namespace App\Adapter\out\Serializer;
 
 use App\Adapter\out\Persistence\Doctrine\Mapper\DoctrineMapperInterface;
 use Doctrine\Common\Annotations\AnnotationReader;
+use Exception;
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
@@ -53,20 +54,24 @@ class SymfonySerializer implements DoctrineMapperInterface
         }
     }
 
+    /**
+     * @param mixed $data
+     * @param mixed $type
+     *
+     * @return array|mixed|object|null
+     * @throws Exception
+     */
     public function denormalize($data, $type)
     {
         try {
-            $dataDenormalized = $this->serializer->denormalize(
-                $this->serializer->normalize($data),
-                $type
-            );
+            $dataDenormalized = $this->serializer->denormalize($this->serializer->normalize($data), $type);
             if ($dataDenormalized instanceof $type || is_array($dataDenormalized)) {
                 return $dataDenormalized;
             } else {
-                return null;
+                throw  new Exception('SERIALIZER ERROR', 500);
             }
         } catch (ExceptionInterface $e) {
-            return null;
+            throw  new Exception($e->getMessage(), 500);
         }
     }
 }

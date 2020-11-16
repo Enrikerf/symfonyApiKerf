@@ -11,11 +11,13 @@ use App\Application\Port\out\Persistence\Database\GetProjectsByPort;
 use App\Domain\Project\Project;
 use Doctrine\ORM\ORMException;
 use Exception;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 
 
 class ProjectPersistenceAdapter implements GetProjectPort, GetProjectsByPort, CreateProjectPort
 {
 
+    public const ORM_EXCEPTION = 500;
     private const DEFAULT_OFFSET = 0;
     private const DEFAULT_LIMIT = 100;
     private ProjectEntityRepository $projectEntityRepository;
@@ -30,18 +32,17 @@ class ProjectPersistenceAdapter implements GetProjectPort, GetProjectsByPort, Cr
     /**
      * @param Project $project
      *
-     * @return Project
+     * @return void
      * @throws Exception
      */
-    public function save(Project $project): ?Project
+    public function save(Project &$project): void
     {
         try {
             $projectEntity = $this->mapper->denormalize($project, ProjectEntity::class);
             $projectEntity = $this->projectEntityRepository->persistAndFlush($projectEntity);
-
-            return $this->mapper->denormalize($projectEntity, Project::class);
-        } catch (ORMException $e) {
-            throw  new Exception($e->getMessage(), 500);
+            $project = $this->mapper->denormalize($projectEntity, Project::class);
+        } catch (Exception $e) {
+            throw  new Exception($e->getMessage(), self::ORM_EXCEPTION);
         }
     }
 
@@ -54,11 +55,13 @@ class ProjectPersistenceAdapter implements GetProjectPort, GetProjectsByPort, Cr
     public function get(int $id): ?Project
     {
         try {
-            $projectEntity = $this->projectEntityRepository->find($id);
-
-            return $this->mapper->denormalize($projectEntity, Project::class);
-        } catch (ORMException $e) {
-            throw  new Exception($e->getMessage(), 500);
+            if ($projectEntity = $this->projectEntityRepository->find($id)) {
+                return $this->mapper->denormalize($projectEntity, Project::class);
+            } else {
+                return null;
+            }
+        } catch (Exception $e) {
+            throw  new Exception($e->getMessage(), self::ORM_EXCEPTION);
         }
     }
 
@@ -68,10 +71,10 @@ class ProjectPersistenceAdapter implements GetProjectPort, GetProjectsByPort, Cr
      * @param int|null   $limit
      * @param int|null   $offset
      *
-     * @return array|null
+     * @return array
      * @throws Exception
      */
-    public function getBy(array $criteria = [], array $orderBy = null, int $limit = null, int $offset = null): ?array
+    public function getBy(array $criteria = [], array $orderBy = null, int $limit = null, int $offset = null): array
     {
         try {
             (!$limit) ? $limit = self::DEFAULT_LIMIT : null;
@@ -79,8 +82,8 @@ class ProjectPersistenceAdapter implements GetProjectPort, GetProjectsByPort, Cr
             $projectEntityArray = $this->projectEntityRepository->findBy($criteria, $orderBy, $limit, $offset);
 
             return $this->mapper->denormalize($projectEntityArray, Project::class.'[]');
-        } catch (ORMException $e) {
-            throw  new Exception($e->getMessage(), 500);
+        } catch (Exception $e) {
+            throw  new Exception($e->getMessage(), self::ORM_EXCEPTION);
         }
     }
 }

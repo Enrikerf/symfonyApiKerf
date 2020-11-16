@@ -4,6 +4,7 @@ namespace App\Tests\Unitary\Application\Service;
 
 use App\Application\Model\ResponseCode;
 use App\Application\Port\in\CreateProject\CreateProjectCommand;
+use App\Application\Port\in\CreateProject\CreateProjectResponse;
 use App\Application\Service\CreateProjectService;
 use App\Tests\Unitary\Application\Port\out\Persistence\Database\CreateProjectPortMockBuilder;
 use App\Tests\Unitary\Domain\Project\ProjectTestBuilder;
@@ -16,25 +17,23 @@ class CreateProjectServiceTest extends TestCase
 
     use MockeryPHPUnitIntegration;
 
-    public function testCreateProjectSuccessReturnCreatedCodeAndCorrectProjectOnMessage(): void
+    private function getTestedClass($portMock)
     {
-        $createProjectService = new CreateProjectService(CreateProjectPortMockBuilder::getReturnProjectPersistedOnSave());
+        return new CreateProjectService($portMock);
+    }
+
+    public function testCreateReturnCreatedCodeAndCorrectProjectOnMessage(): void
+    {
+        $createProjectService = $this->getTestedClass(CreateProjectPortMockBuilder::getReturnProjectPersistedOnSave());
         $return = $createProjectService->create(new CreateProjectCommand(ProjectTestBuilder::DEFAULT_PROJECT_NAME));
         $this->assertEquals(ResponseCode::OBJECT_CREATED, $return->getResponseCode());
         $this->assertEquals(ProjectTestBuilder::DEFAULT_PROJECT_ID, $return->getMessage()[0]->getId());
         $this->assertEquals(ProjectTestBuilder::DEFAULT_PROJECT_NAME, $return->getMessage()[0]->getName());
     }
 
-    public function testCreateProjectOnSaveErrorReturnNull(): void
-    {
-        $createProjectService = new CreateProjectService(CreateProjectPortMockBuilder::getReturnNullOnSave());
-        $return = $createProjectService->create(new CreateProjectCommand(ProjectTestBuilder::DEFAULT_PROJECT_NAME));
-        $this->assertEquals(ResponseCode::PERSISTENCE_EXCEPTION, $return->getResponseCode());
-    }
-
     public function testCreateProjectOnSaveExceptionReturnException(): void
     {
-        $createProjectService = new CreateProjectService(CreateProjectPortMockBuilder::getReturnExceptionOnSave());
+        $createProjectService = $this->getTestedClass(CreateProjectPortMockBuilder::getReturnExceptionOnSave());
         $return = $createProjectService->create(new CreateProjectCommand(ProjectTestBuilder::DEFAULT_PROJECT_NAME));
         $this->assertEquals(ResponseCode::PERSISTENCE_EXCEPTION, $return->getResponseCode());
     }

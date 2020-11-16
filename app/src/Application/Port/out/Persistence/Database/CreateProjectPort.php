@@ -12,8 +12,7 @@ interface CreateProjectPort
     /**
      * @param Project $project
      *
-     * @return Project|null
      * @throws Exception
      */
-    public function save(Project $project): ?Project;
+    public function save(Project &$project): void;
 }

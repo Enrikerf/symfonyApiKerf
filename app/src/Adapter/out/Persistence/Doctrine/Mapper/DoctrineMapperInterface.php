@@ -2,15 +2,19 @@
 
 namespace App\Adapter\out\Persistence\Doctrine\Mapper;
 
+use Exception;
+
+
 interface DoctrineMapperInterface
 {
     public function normalize($data, string $format = null, array $context = []);
 
     /**
-     * @param $entity mixed DoctrineEntity or DomainEntity
-     * @param $type mixed  DoctrineEntity or DomainEntity
+     * @param $entity
+     * @param $type
      *
-     * @return mixed DoctrineEntity or DomainEntity
+     * @return mixed
+     * @throws Exception
      */
     public function denormalize($entity,$type);
 

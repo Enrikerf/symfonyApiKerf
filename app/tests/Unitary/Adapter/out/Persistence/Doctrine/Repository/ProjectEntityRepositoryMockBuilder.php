@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unitary\Adapter\out\Persistence\Doctrine\Repository;
 
+use App\Adapter\out\Persistence\Doctrine\Entity\ProjectEntity;
 use App\Adapter\out\Persistence\Doctrine\Repository\ProjectEntityRepository;
 use App\Tests\Unitary\Adapter\out\Persistence\Doctrine\Entity\ProjectEntityTestBuilder;
 use Doctrine\ORM\ORMException;
@@ -33,11 +34,11 @@ class ProjectEntityRepositoryMockBuilder
     {
         $projectEntityRepository = Mockery::mock(ProjectEntityRepository::class);
         $projectEntityRepository->allows([
-            'persistAndFlush' =>ProjectEntityTestBuilder::getDefaultProject(),
             'find' =>ProjectEntityTestBuilder::getDefaultProject()
-        ])
-         ;
-
+        ]);
+        $projectEntityRepository->shouldReceive('persistAndFlush')->andReturnUsing(function (ProjectEntity $projectEntity){
+            return $projectEntity;
+        });
         return $projectEntityRepository;
     }
 

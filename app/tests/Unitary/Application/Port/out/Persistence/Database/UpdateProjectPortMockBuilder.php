@@ -16,11 +16,9 @@ class UpdateProjectPortMockBuilder
     {
         $mock = Mockery::mock(UpdateProjectPort::class);
         $mock->shouldReceive('get')->andReturn(ProjectTestBuilder::getDefaultPersistedProject());
-        $mock->shouldReceive('update')->with(Mockery::on(function (Project $project) {
-            $project->setId(ProjectTestBuilder::DEFAULT_PROJECT_ID);
-
-            return true;
-        }))->andReturn(null);
+        $mock->shouldReceive('update')->andReturnUsing(function (Project $arg) {
+            return $arg;
+        });
 
         return $mock;
     }

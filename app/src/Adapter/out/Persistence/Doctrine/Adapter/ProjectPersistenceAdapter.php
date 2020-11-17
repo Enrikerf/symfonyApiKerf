@@ -109,7 +109,7 @@ class ProjectPersistenceAdapter implements GetProjectPort, GetProjectsByPort, Cr
 
     private function updateContent(ProjectEntity &$projectEntityInDb, ProjectEntity $newProjectEntityData)
     {
-        $newProjectEntityData->getName() ? $projectEntityInDb->setName($newProjectEntityData->getName()) : null;
-        $newProjectEntityData->getIssueCount() ? $projectEntityInDb->setIssueCount($newProjectEntityData->getIssueCount()) : null;
+        $newProjectEntityData->getName() !== null ? $projectEntityInDb->setName($newProjectEntityData->getName()) : null;
+        $newProjectEntityData->getIssueCount() !== null ? $projectEntityInDb->setIssueCount($newProjectEntityData->getIssueCount()) : null;
     }
 }

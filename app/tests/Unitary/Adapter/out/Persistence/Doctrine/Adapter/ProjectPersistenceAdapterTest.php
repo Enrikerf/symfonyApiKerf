@@ -123,7 +123,7 @@ class ProjectPersistenceAdapterTest extends TestCase
 
     public function testUpdateThrowExceptionWithOrmExceptionCodeOnORMException()
     {
-        $projectEntityRepository = ProjectEntityRepositoryMockBuilder::getReturnExceptionOnPersist();
+        $projectEntityRepository = ProjectEntityRepositoryMockBuilder::getReturnExceptionOnUpdate();
         $projectPersistenceAdapter = $this->constructPersistenceAdapter($projectEntityRepository);
         $this->expectException(Exception::class);
         $this->expectExceptionCode(ProjectPersistenceAdapter::ORM_EXCEPTION);
@@ -133,7 +133,7 @@ class ProjectPersistenceAdapterTest extends TestCase
 
     public function testUpdateThrowExceptionWithORMExceptionCodeOnSerializerException(): void
     {
-        $projectEntityRepository = ProjectEntityRepositoryMockBuilder::getReturnDefaultProjectOnPersist();
+        $projectEntityRepository = ProjectEntityRepositoryMockBuilder::getReturnDefaultProjectOnUpdate();
         $mapperMock = SymfonySerializerMockBuilder::getExceptionOnDenormalize();
         $projectPersistenceAdapter = $this->constructPersistenceAdapter($projectEntityRepository, $mapperMock);
         $this->expectException(Exception::class);
@@ -147,9 +147,11 @@ class ProjectPersistenceAdapterTest extends TestCase
         $projectEntityRepository = ProjectEntityRepositoryMockBuilder::getReturnDefaultProjectOnUpdate();
         $projectPersistenceAdapter = $this->constructPersistenceAdapter($projectEntityRepository);
         $project = ProjectTestBuilder::getDefaultPersistedProject();
-        $project->setName(ProjectEntityTestBuilder::NOT_DEFAULT_NAME);
+        $project->setName(ProjectTestBuilder::NOT_DEFAULT_NAME);
+        $project->setIssueCount(ProjectTestBuilder::NOT_DEFAULT_ISSUE_COUNT);
         $projectPersistenceAdapter->update($project);
         $this->assertTrue($project->getId() == ProjectEntityTestBuilder::DEFAULT_ID);
-        $this->assertEquals($project->getName(), ProjectEntityTestBuilder::NOT_DEFAULT_NAME);
+        $this->assertEquals($project->getName(), ProjectTestBuilder::NOT_DEFAULT_NAME);
+        $this->assertEquals($project->getIssueCount(), ProjectTestBuilder::NOT_DEFAULT_ISSUE_COUNT);
     }
 }

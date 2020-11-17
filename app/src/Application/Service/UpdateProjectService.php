@@ -24,8 +24,6 @@ class UpdateProjectService implements UpdateProjectUseCase
     public function update(UpdateProjectCommand $updateProjectCommand): UpdateProjectResponse
     {
         try {
-            $project = new Project($updateProjectCommand->getName());
-            $project->setId($updateProjectCommand->getId());
             if ($projectToUpdate = $this->updateProjectPort->get($updateProjectCommand->getId())) {
                 $projectToUpdate->setName($updateProjectCommand->getName());
                 $this->updateProjectPort->update($projectToUpdate);
@@ -33,7 +31,7 @@ class UpdateProjectService implements UpdateProjectUseCase
                 return new UpdateProjectResponse(ResponseCode::NOT_FOUND, []);
             }
 
-            return new UpdateProjectResponse(ResponseCode::OK, [$project]);
+            return new UpdateProjectResponse(ResponseCode::OK, [$projectToUpdate]);
         } catch (Exception $e) {
             return new UpdateProjectResponse(ResponseCode::PERSISTENCE_EXCEPTION, []);
         }

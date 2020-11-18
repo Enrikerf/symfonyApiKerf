@@ -5,8 +5,9 @@ namespace App\Adapter\out\Persistence\Doctrine\Adapter;
 use App\Adapter\out\Persistence\Doctrine\Entity\IssueEntity;
 use App\Adapter\out\Persistence\Doctrine\Mapper\DoctrineMapperInterface;
 use App\Adapter\out\Persistence\Doctrine\Repository\IssueEntityRepository;
+use App\Domain\Issue\Issue;
 use Exception;
-use OpenAPI\Server\Model\Issue;
+
 
 
 class IssuePersistenceAdapter

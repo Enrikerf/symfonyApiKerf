@@ -3,7 +3,6 @@
 namespace App\Tests\Unitary\Adapter\out\Serializer;
 
 use App\Adapter\out\Serializer\SymfonySerializer;
-use Mockery;
 
 
 class SymfonySerializerTestBuilder
@@ -13,6 +12,4 @@ class SymfonySerializerTestBuilder
     {
         return (new SymfonySerializer());
     }
-
-
 }

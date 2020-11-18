@@ -30,7 +30,12 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
-    app.adapter.in.api:
+    app.adapter.in.api.projects:
         class: App\Adapter\in\Api\Handler\ProjectControllerAdapter
         tags:
             - { name: "open_api_server.api", api: "projects" }
+
+    app.adapter.in.api.issues:
+        class: App\Adapter\in\Api\Handler\IssueControllerAdapter
+        tags:
+            - { name: "open_api_server.api", api: "issues" }

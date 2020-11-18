@@ -9,10 +9,8 @@ use App\Application\Port\in\GetProject\GetProjectQuery;
 use App\Application\Port\in\GetProjectsBy\GetProjectsByQuery;
 use App\Application\Port\in\UpdateProject\UpdateProjectCommand;
 use App\Application\Port\in\UpdateProject\UpdateProjectUseCase;
-use App\Application\Service\CreateProjectService;
 use OpenAPI\Server\Api\ProjectsApiInterface;
 use OpenAPI\Server\Model\CreateProject;
-use OpenAPI\Server\Model\Project;
 use OpenAPI\Server\Model\ProjectName;
 
 

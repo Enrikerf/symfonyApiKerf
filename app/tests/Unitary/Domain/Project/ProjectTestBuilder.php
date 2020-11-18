@@ -3,8 +3,6 @@
 namespace App\Tests\Unitary\Domain\Project;
 
 use App\Domain\Project\Project;
-use App\Tests\Unitary\Adapter\out\Persistence\Doctrine\Entity\ProjectEntityTestBuilder;
-use phpDocumentor\Reflection\Types\Self_;
 
 
 class ProjectTestBuilder
@@ -30,7 +28,7 @@ class ProjectTestBuilder
 
     public static function getDefaultPersistedProject()
     {
-        return self::getProjectTest()->name(self::DEFAULT_PROJECT_NAME)->id(ProjectEntityTestBuilder::DEFAULT_ID)->build();
+        return self::getProjectTest()->name(self::DEFAULT_PROJECT_NAME)->id(ProjectTestBuilder::DEFAULT_PROJECT_ID)->build();
     }
 
     public function name($string)

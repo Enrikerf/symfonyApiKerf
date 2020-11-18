@@ -12,16 +12,6 @@ class ProjectEntityTestBuilder
     public const DEFAULT_ID = 12345;
     public const DEFAULT_ISSUE_COUNT = 9876;
 
-    public static function getProjectEntityTest()
-    {
-        return new ProjectEntityTestBuilder();
-    }
-
-    public static function getDefaultRightProjectWithoutId()
-    {
-        return (new ProjectEntity())->setName(self::DEFAULT_NAME);
-    }
-
     public static function getDefaultProject()
     {
         return (new ProjectEntity())

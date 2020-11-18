@@ -6,10 +6,14 @@ use App\Application\Model\ResponseCode;
 use App\Application\Port\in\CreateProject\CreateProjectCommand;
 use App\Application\Port\in\CreateProject\CreateProjectResponse;
 use App\Application\Port\in\CreateProjectIssue\CreateProjectIssueCommand;
+use App\Application\Port\out\Persistence\Database\CreateProjectIssuePort;
+use App\Application\Port\out\Persistence\Database\GetProjectPort;
 use App\Application\Service\CreateProjectProjectIssueService;
 use App\Application\Service\CreateProjectService;
 use App\Domain\Issue\Issue;
+use App\Tests\Unitary\Application\Port\out\Persistence\Database\CreateProjectIssuePortMockBuilder;
 use App\Tests\Unitary\Application\Port\out\Persistence\Database\CreateProjectPortMockBuilder;
+use App\Tests\Unitary\Application\Port\out\Persistence\Database\GetProjectPortMockBuilder;
 use App\Tests\Unitary\Domain\Issue\IssueTestBuilder;
 use App\Tests\Unitary\Domain\Project\ProjectTestBuilder;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
@@ -21,14 +25,17 @@ class CreateProjectIssueServiceTest extends TestCase
 
     use MockeryPHPUnitIntegration;
 
-    private function getTestedClass()
+    private function getTestedClass(GetProjectPort $getProjectPort, CreateProjectIssuePort $createProjectIssuePort)
     {
-        return new CreateProjectProjectIssueService();
+        return new CreateProjectProjectIssueService($getProjectPort, $createProjectIssuePort);
     }
 
     public function testOnParentWithTypeTopicReturnSuccessCode(): void
     {
-        $createProjectService = $this->getTestedClass();
+        $createProjectService = $this->getTestedClass(
+            GetProjectPortMockBuilder::getDefault(),
+            CreateProjectIssuePortMockBuilder::getTopicTypeParentOnGetAndDefaultIssuePersistedOnSave()
+        );
         $return = $createProjectService->create(
             new CreateProjectIssueCommand(
                 IssueTestBuilder::DEFAULT_PROJECT_ID,
@@ -43,7 +50,10 @@ class CreateProjectIssueServiceTest extends TestCase
 
     public function testOnParentWithoutTypeTopicReturnBadRequest(): void
     {
-        $createProjectService = $this->getTestedClass();
+        $createProjectService = $this->getTestedClass(
+            GetProjectPortMockBuilder::getDefault(),
+            CreateProjectIssuePortMockBuilder::getNonTopicTypeParentOnGetAndDefaultIssuePersistedOnSave()
+        );
         $return = $createProjectService->create(
             new CreateProjectIssueCommand(
                 IssueTestBuilder::DEFAULT_PROJECT_ID,
@@ -57,7 +67,10 @@ class CreateProjectIssueServiceTest extends TestCase
 
     public function testOnNotFoundProjectIdReturnBadRequest(): void
     {
-        $createProjectService = $this->getTestedClass();
+        $createProjectService = $this->getTestedClass(
+            GetProjectPortMockBuilder::getNull(),
+            CreateProjectIssuePortMockBuilder::getTopicTypeParentOnGetAndDefaultIssuePersistedOnSave()
+        );
         $return = $createProjectService->create(
             new CreateProjectIssueCommand(
                 IssueTestBuilder::DEFAULT_PROJECT_ID,
@@ -71,7 +84,11 @@ class CreateProjectIssueServiceTest extends TestCase
 
     public function testOnExceptionReturnDomainExceptionCode(): void
     {
-        $createProjectService = $this->getTestedClass();
+        //all exception combination?
+        $createProjectService = $this->getTestedClass(
+            GetProjectPortMockBuilder::getExceptionOnGet(),
+            CreateProjectIssuePortMockBuilder::getExceptions()
+        );
         $return = $createProjectService->create(
             new CreateProjectIssueCommand(
                 IssueTestBuilder::DEFAULT_PROJECT_ID,

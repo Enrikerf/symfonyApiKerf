@@ -14,88 +14,92 @@ class IssueEntityRepositoryMockBuilder
 
     public static function getReturnExceptionOnPersist()
     {
-        $projectEntityRepository = (Mockery::mock(IssueEntityRepository::class));
-        $projectEntityRepository->shouldReceive('persistAndFlush')
+        $issueEntityRepository = (Mockery::mock(IssueEntityRepository::class));
+        $issueEntityRepository->shouldReceive('persistAndFlush')
             ->andThrow(ORMException::class);
 
-        return $projectEntityRepository;
+        return $issueEntityRepository;
     }
 
     public static function getReturnDefaultProjectOnPersist()
     {
-        $projectEntityRepository = Mockery::mock(IssueEntityRepository::class);
-        $projectEntityRepository->shouldReceive('persistAndFlush')
-            ->andReturn(IssueEntityTestBuilder::getDefaultNew());
+        $issueEntityRepository = Mockery::mock(IssueEntityRepository::class);
+        $issueEntityRepository->shouldReceive('persistAndFlush')->andReturnUsing(function (
+            IssueEntity $issueEntity
+        ) {
+            $issueEntity->setId(IssueEntityTestBuilder::DEFAULT_ID);
+            return $issueEntity;
+        });
 
-        return $projectEntityRepository;
+        return $issueEntityRepository;
     }
 
     public static function getReturnDefaultProjectOnUpdate()
     {
-        $projectEntityRepository = Mockery::mock(IssueEntityRepository::class);
-        $projectEntityRepository->allows([
+        $issueEntityRepository = Mockery::mock(IssueEntityRepository::class);
+        $issueEntityRepository->allows([
             'find' => IssueEntityTestBuilder::getDefaultNew(),
         ]);
-        $projectEntityRepository->shouldReceive('persistAndFlush')->andReturnUsing(function (
-            IssueEntity $projectEntity
+        $issueEntityRepository->shouldReceive('persistAndFlush')->andReturnUsing(function (
+            IssueEntity $issueEntity
         ) {
-            return $projectEntity;
+            return $issueEntity;
         });
 
-        return $projectEntityRepository;
+        return $issueEntityRepository;
     }
 
     public static function getReturnExceptionOnUpdate()
     {
-        $projectEntityRepository = (Mockery::mock(IssueEntityRepository::class));
-        $projectEntityRepository->shouldReceive(['persistAndFlush', 'find'])
+        $issueEntityRepository = (Mockery::mock(IssueEntityRepository::class));
+        $issueEntityRepository->shouldReceive(['persistAndFlush', 'find'])
             ->andThrow(ORMException::class);
 
-        return $projectEntityRepository;
+        return $issueEntityRepository;
     }
 
     public static function getReturnExceptionOnFind()
     {
-        $projectEntityRepository = (Mockery::mock(IssueEntityRepository::class));
-        $projectEntityRepository->shouldReceive('find')
+        $issueEntityRepository = (Mockery::mock(IssueEntityRepository::class));
+        $issueEntityRepository->shouldReceive('find')
             ->andThrow(ORMException::class);
 
-        return $projectEntityRepository;
+        return $issueEntityRepository;
     }
 
     public static function getReturnDefaultProjectOnFind()
     {
-        $projectEntityRepository = Mockery::mock(IssueEntityRepository::class);
-        $projectEntityRepository->shouldReceive('find')
+        $issueEntityRepository = Mockery::mock(IssueEntityRepository::class);
+        $issueEntityRepository->shouldReceive('find')
             ->andReturn(IssueEntityTestBuilder::getDefaultNew());
 
-        return $projectEntityRepository;
+        return $issueEntityRepository;
     }
 
     public static function getReturnNullOnFind()
     {
-        $projectEntityRepository = Mockery::mock(IssueEntityRepository::class);
-        $projectEntityRepository->shouldReceive('find')
+        $issueEntityRepository = Mockery::mock(IssueEntityRepository::class);
+        $issueEntityRepository->shouldReceive('find')
             ->andReturn(null);
 
-        return $projectEntityRepository;
+        return $issueEntityRepository;
     }
 
     public static function getReturnExceptionOnFindBy()
     {
-        $projectEntityRepository = (Mockery::mock(IssueEntityRepository::class));
-        $projectEntityRepository->shouldReceive('findBy')
+        $issueEntityRepository = (Mockery::mock(IssueEntityRepository::class));
+        $issueEntityRepository->shouldReceive('findBy')
             ->andThrow(ORMException::class);
 
-        return $projectEntityRepository;
+        return $issueEntityRepository;
     }
 
     public static function getReturnArrayOfProjectOnFindBy()
     {
-        $projectEntityRepository = (Mockery::mock(IssueEntityRepository::class));
-        $projectEntityRepository->shouldReceive('findBy')
+        $issueEntityRepository = (Mockery::mock(IssueEntityRepository::class));
+        $issueEntityRepository->shouldReceive('findBy')
             ->andReturn([IssueEntityTestBuilder::getDefaultNew()]);
 
-        return $projectEntityRepository;
+        return $issueEntityRepository;
     }
 }

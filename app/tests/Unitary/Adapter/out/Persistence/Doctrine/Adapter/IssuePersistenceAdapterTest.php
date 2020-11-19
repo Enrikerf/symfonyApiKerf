@@ -3,14 +3,13 @@
 namespace App\Tests\Unitary\Adapter\out\Persistence\Doctrine\Adapter;
 
 use App\Adapter\out\Persistence\Doctrine\Adapter\IssuePersistenceAdapter;
-use App\Adapter\out\Persistence\Doctrine\Adapter\ProjectPersistenceAdapter;
+use App\Domain\Issue\Issue;
 use App\Domain\Project\Project;
-use App\Tests\Unitary\Adapter\out\Persistence\Doctrine\Entity\ProjectEntityTestBuilder;
+use App\Tests\Unitary\Adapter\out\Persistence\Doctrine\Entity\IssueEntityTestBuilder;
 use App\Tests\Unitary\Adapter\out\Persistence\Doctrine\Repository\IssueEntityRepositoryMockBuilder;
 use App\Tests\Unitary\Adapter\out\Serializer\SymfonySerializerMockBuilder;
 use App\Tests\Unitary\Adapter\out\Serializer\SymfonySerializerTestBuilder;
 use App\Tests\Unitary\Domain\Issue\IssueTestBuilder;
-use App\Tests\Unitary\Domain\Project\ProjectTestBuilder;
 use Exception;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
@@ -30,143 +29,130 @@ class IssuePersistenceAdapterTest extends TestCase
 
     public function testSaveThrowExceptionWithORMExceptionCodeOnORMException(): void
     {
-        $this->markTestSkipped("implementing feature");
         $issueEntityRepository = IssueEntityRepositoryMockBuilder::getReturnExceptionOnPersist();
-        $projectPersistenceAdapter = $this->constructPersistenceAdapter($issueEntityRepository);
+        $issuePersistenceAdapter = $this->constructPersistenceAdapter($issueEntityRepository);
         $this->expectException(Exception::class);
-        $this->expectExceptionCode(ProjectPersistenceAdapter::ORM_EXCEPTION);
+        $this->expectExceptionCode(IssuePersistenceAdapter::ORM_EXCEPTION);
         $issue = IssueTestBuilder::getDefaultNew();
-        $projectPersistenceAdapter->save($issue);
+        $issuePersistenceAdapter->save($issue);
     }
 
     public function testSaveThrowExceptionWithORMExceptionCodeOnSerializerException(): void
     {
-        $this->markTestSkipped();
         $issueEntityRepository = IssueEntityRepositoryMockBuilder::getReturnDefaultProjectOnPersist();
         $mapperMock = SymfonySerializerMockBuilder::getExceptionOnDenormalize();
-        $projectPersistenceAdapter = $this->constructPersistenceAdapter($issueEntityRepository, $mapperMock);
+        $issuePersistenceAdapter = $this->constructPersistenceAdapter($issueEntityRepository, $mapperMock);
         $this->expectException(Exception::class);
-        $this->expectExceptionCode(ProjectPersistenceAdapter::ORM_EXCEPTION);
+        $this->expectExceptionCode(IssuePersistenceAdapter::ORM_EXCEPTION);
         $issue = IssueTestBuilder::getDefaultNew();
-        $projectPersistenceAdapter->save($issue);
+        $issuePersistenceAdapter->save($issue);
     }
 
     public function testSaveReturnDomainObjectOnSuccess(): void
     {
-        $this->markTestSkipped();
         $issueEntityRepository = IssueEntityRepositoryMockBuilder::getReturnDefaultProjectOnPersist();
-        $projectPersistenceAdapter = $this->constructPersistenceAdapter($issueEntityRepository);
-        $issue = IssueTestBuilder::getDefaultNew();
-        $projectPersistenceAdapter->save($issue);
-        $this->assertTrue($issue instanceof Project);
-        $this->assertTrue($issue->getId() == ProjectEntityTestBuilder::DEFAULT_ID);
+        $issuePersistenceAdapter = $this->constructPersistenceAdapter($issueEntityRepository);
+        $issue = IssueTestBuilder::getDefaultTypeTopic();
+        $issuePersistenceAdapter->save($issue);
+        $this->assertTrue($issue instanceof Issue);
+        $this->assertTrue($issue->getId() == IssueEntityTestBuilder::DEFAULT_ID);
     }
 
     public function testGetByIdThrowExceptionOnOrmException(): void
     {
-        $this->markTestSkipped();
         $issueEntityRepository = IssueEntityRepositoryMockBuilder::getReturnDefaultProjectOnFind();
         $mapperMock = SymfonySerializerMockBuilder::getExceptionOnDenormalize();
-        $projectPersistenceAdapter = $this->constructPersistenceAdapter($issueEntityRepository, $mapperMock);
+        $issuePersistenceAdapter = $this->constructPersistenceAdapter($issueEntityRepository, $mapperMock);
         $this->expectException(Exception::class);
-        $this->expectExceptionCode(ProjectPersistenceAdapter::ORM_EXCEPTION);
-        $projectPersistenceAdapter->get(ProjectTestBuilder::DEFAULT_PROJECT_ID);
+        $this->expectExceptionCode(IssuePersistenceAdapter::ORM_EXCEPTION);
+        $issuePersistenceAdapter->get(IssueTestBuilder::DEFAULT_PERSISTED_ID);
     }
 
     public function testGetByIdThrowExceptionOnSerializerException(): void
     {
-        $this->markTestSkipped("implementing feature");
         $issueEntityRepository = IssueEntityRepositoryMockBuilder::getReturnExceptionOnFind();
-        $projectPersistenceAdapter = $this->constructPersistenceAdapter($issueEntityRepository);
+        $issuePersistenceAdapter = $this->constructPersistenceAdapter($issueEntityRepository);
         $this->expectException(Exception::class);
-        $this->expectExceptionCode(ProjectPersistenceAdapter::ORM_EXCEPTION);
-        $projectPersistenceAdapter->get(ProjectTestBuilder::DEFAULT_PROJECT_ID);
+        $this->expectExceptionCode(IssuePersistenceAdapter::ORM_EXCEPTION);
+        $issuePersistenceAdapter->get(IssueTestBuilder::DEFAULT_PROJECT_ID);
     }
 
     public function testGetByIdReturnProjectDomainObjectOnSuccess(): void
     {
-        $this->markTestSkipped("implementing feature");
         $issueEntityRepository = IssueEntityRepositoryMockBuilder::getReturnDefaultProjectOnFind();
-        $projectPersistenceAdapter = $this->constructPersistenceAdapter($issueEntityRepository);
-        $project = $projectPersistenceAdapter->get(ProjectTestBuilder::DEFAULT_PROJECT_ID);
-        $this->assertTrue($project instanceof Project);
-        $this->assertTrue($project->getId() == ProjectEntityTestBuilder::DEFAULT_ID);
+        $issuePersistenceAdapter = $this->constructPersistenceAdapter($issueEntityRepository);
+        $issue = $issuePersistenceAdapter->get(IssueTestBuilder::DEFAULT_PROJECT_ID);
+        $this->assertTrue($issue instanceof Issue);
+        $this->assertTrue($issue->getId() == IssueEntityTestBuilder::DEFAULT_ID);
     }
 
     public function testGetByIdReturnNullOnNotFound(): void
     {
-        $this->markTestSkipped("implementing feature");
         $issueEntityRepository = IssueEntityRepositoryMockBuilder::getReturnNullOnFind();
-        $projectPersistenceAdapter = $this->constructPersistenceAdapter($issueEntityRepository);
-        $project = $projectPersistenceAdapter->get(ProjectTestBuilder::DEFAULT_PROJECT_ID);
-        $this->assertNull($project);
+        $issuePersistenceAdapter = $this->constructPersistenceAdapter($issueEntityRepository);
+        $issue = $issuePersistenceAdapter->get(IssueTestBuilder::DEFAULT_PROJECT_ID);
+        $this->assertNull($issue);
     }
 
     public function testGetByCriteriaThrowExceptionWithORMExceptionCodeOnORMException(): void
     {
-        $this->markTestSkipped("implementing feature");
         $issueEntityRepository = IssueEntityRepositoryMockBuilder::getReturnExceptionOnFindBy();
-        $projectPersistenceAdapter = $this->constructPersistenceAdapter($issueEntityRepository);
+        $issuePersistenceAdapter = $this->constructPersistenceAdapter($issueEntityRepository);
         $this->expectException(Exception::class);
-        $this->expectExceptionCode(ProjectPersistenceAdapter::ORM_EXCEPTION);
-        $projectPersistenceAdapter->getBy([]);
+        $this->expectExceptionCode(IssuePersistenceAdapter::ORM_EXCEPTION);
+        $issuePersistenceAdapter->getBy([]);
     }
 
     public function testGetByCriteriaThrowExceptionWithORMExceptionCodeOnSerializerException(): void
     {
-        $this->markTestSkipped("implementing feature");
         $issueEntityRepository = IssueEntityRepositoryMockBuilder::getReturnArrayOfProjectOnFindBy();
         $mapperMock = SymfonySerializerMockBuilder::getExceptionOnDenormalize();
-        $projectPersistenceAdapter = $this->constructPersistenceAdapter($issueEntityRepository, $mapperMock);
+        $issuePersistenceAdapter = $this->constructPersistenceAdapter($issueEntityRepository, $mapperMock);
         $this->expectException(Exception::class);
-        $this->expectExceptionCode(ProjectPersistenceAdapter::ORM_EXCEPTION);
-        $projectPersistenceAdapter->getBy([]);
+        $this->expectExceptionCode(IssuePersistenceAdapter::ORM_EXCEPTION);
+        $issuePersistenceAdapter->getBy([]);
     }
 
     public function testGetByCriteriaReturnArrayOfProjectDomainObjectOnSuccess(): void
     {
-        $this->markTestSkipped("implementing feature");
         $issueEntityRepository = IssueEntityRepositoryMockBuilder::getReturnArrayOfProjectOnFindBy();
-        $projectPersistenceAdapter = $this->constructPersistenceAdapter($issueEntityRepository);
-        $projects = $projectPersistenceAdapter->getBy([]);
-        $this->assertIsArray($projects);
-        $this->assertTrue($projects[0] instanceof Project);
+        $issuePersistenceAdapter = $this->constructPersistenceAdapter($issueEntityRepository);
+        $issues = $issuePersistenceAdapter->getBy([]);
+        $this->assertIsArray($issues);
+        $this->assertTrue($issues[0] instanceof Issue);
     }
 
     public function testUpdateThrowExceptionWithOrmExceptionCodeOnORMException()
     {
-        $this->markTestSkipped("implementing feature");
         $issueEntityRepository = IssueEntityRepositoryMockBuilder::getReturnExceptionOnUpdate();
-        $projectPersistenceAdapter = $this->constructPersistenceAdapter($issueEntityRepository);
+        $issuePersistenceAdapter = $this->constructPersistenceAdapter($issueEntityRepository);
         $this->expectException(Exception::class);
-        $this->expectExceptionCode(ProjectPersistenceAdapter::ORM_EXCEPTION);
-        $project = ProjectTestBuilder::getDefaultNewProject();
-        $projectPersistenceAdapter->update($project);
+        $this->expectExceptionCode(IssuePersistenceAdapter::ORM_EXCEPTION);
+        $issue = IssueTestBuilder::getDefaultPersisted();
+        $issuePersistenceAdapter->update($issue);
     }
 
     public function testUpdateThrowExceptionWithORMExceptionCodeOnSerializerException(): void
     {
-        $this->markTestSkipped("implementing feature");
         $issueEntityRepository = IssueEntityRepositoryMockBuilder::getReturnDefaultProjectOnUpdate();
         $mapperMock = SymfonySerializerMockBuilder::getExceptionOnDenormalize();
-        $projectPersistenceAdapter = $this->constructPersistenceAdapter($issueEntityRepository, $mapperMock);
+        $issuePersistenceAdapter = $this->constructPersistenceAdapter($issueEntityRepository, $mapperMock);
         $this->expectException(Exception::class);
-        $this->expectExceptionCode(ProjectPersistenceAdapter::ORM_EXCEPTION);
-        $project = ProjectTestBuilder::getDefaultNewProject();
-        $projectPersistenceAdapter->update($project);
+        $this->expectExceptionCode(IssuePersistenceAdapter::ORM_EXCEPTION);
+        $issue = IssueTestBuilder::getDefaultPersisted();
+        $issuePersistenceAdapter->update($issue);
     }
 
     public function testUpdateReturnProjectDomainObjectOnSuccessWithModifiedVars(): void
     {
-        $this->markTestSkipped("implementing feature");
         $issueEntityRepository = IssueEntityRepositoryMockBuilder::getReturnDefaultProjectOnUpdate();
-        $projectPersistenceAdapter = $this->constructPersistenceAdapter($issueEntityRepository);
-        $project = ProjectTestBuilder::getDefaultPersistedProject();
-        $project->setName(ProjectTestBuilder::NOT_DEFAULT_NAME);
-        $project->setIssueCount(ProjectTestBuilder::NOT_DEFAULT_ISSUE_COUNT);
-        $projectPersistenceAdapter->update($project);
-        $this->assertTrue($project->getId() == ProjectEntityTestBuilder::DEFAULT_ID);
-        $this->assertEquals($project->getName(), ProjectTestBuilder::NOT_DEFAULT_NAME);
-        $this->assertEquals($project->getIssueCount(), ProjectTestBuilder::NOT_DEFAULT_ISSUE_COUNT);
+        $issuePersistenceAdapter = $this->constructPersistenceAdapter($issueEntityRepository);
+        $issue = IssueTestBuilder::getDefaultPersisted();
+        $issue->setTitle(IssueTestBuilder::NOT_DEFAULT_TITLE);
+        $issue->setTime(IssueTestBuilder::NOT_DEFAULT_TIME);
+        $issuePersistenceAdapter->update($issue);
+        $this->assertTrue($issue->getId() == IssueEntityTestBuilder::DEFAULT_ID);
+        $this->assertEquals($issue->getTitle(), IssueTestBuilder::NOT_DEFAULT_TITLE);
+        $this->assertEquals($issue->getTime(), IssueTestBuilder::NOT_DEFAULT_TIME);
     }
 }

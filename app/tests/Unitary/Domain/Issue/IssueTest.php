@@ -88,4 +88,5 @@ class IssueTest extends TestCase
         ]);
         $this->assertEquals(6, $issue->getTotalTime());
     }
+
 }

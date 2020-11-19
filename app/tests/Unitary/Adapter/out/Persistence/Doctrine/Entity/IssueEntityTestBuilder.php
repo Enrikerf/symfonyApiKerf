@@ -10,22 +10,21 @@ use Doctrine\Common\Collections\ArrayCollection;
 class IssueEntityTestBuilder
 {
 
-    const DEFAULT_ID = null;
-    const DEFAULT_PERSISTED_ID = 1;
+    const DEFAULT_ID = 1234;
     const DEFAULT_PROJECT_ID = 1;
     const DEFAULT_TITLE = 'DEFAULT DOMAIN TITLE';
     const DEFAULT_TYPE = Issue::TYPE_DEV;
     const DEFAULT_PARENT_ID = null;
-    const PARENT_ID = 1;
     const DEFAULT_TIME = 0;
     const DEFAULT_TOTAL_TIME = 0;
-    private ?int     $id        = null;
-    private ?int     $projectId = null;
-    private ?string  $type      = null;
-    private ?string  $title     = null;
-    private ?float   $time      = null;
+    private ?int              $id        = null;
+    private ?int              $projectId = null;
+    private ?string           $type      = null;
+    private ?string           $title     = null;
+    private ?float            $time      = null;
+    private ?float            $totalTime = null;
     private ArrayCollection   $childs;
-    private ?int     $parentId  = null;
+    private ?int              $parentId  = null;
 
     public static function getBuilder()
     {
@@ -34,7 +33,14 @@ class IssueEntityTestBuilder
 
     public static function getDefaultNew(): IssueEntity
     {
-        return new IssueEntity();
+        return (new IssueEntity())->setId(self::DEFAULT_ID)
+            ->setProjectId(self::DEFAULT_PROJECT_ID)
+            ->setType(self::DEFAULT_TYPE)
+            ->setTitle(self::DEFAULT_TITLE)
+            ->setTime(self::DEFAULT_TIME)
+            ->setTotalTime(self::DEFAULT_TOTAL_TIME)
+            ->setChilds(new ArrayCollection())
+            ->setParent(self::DEFAULT_PARENT_ID);
     }
 
     public static function getDefaultTypeTopic(): IssueEntity
@@ -91,12 +97,27 @@ class IssueEntityTestBuilder
         return $this;
     }
 
+    /**
+     * @return float|null
+     */
+    public function totalTime(): ?float
+    {
+        return $this->totalTime;
+    }
+
+
+
     public function build()
     {
-        $project = new IssueEntity();
-        ($this->id) ? $project->setId($this->id) : null;
-        ($this->time) ? $project->setTime($this->time) : null;
-        ($this->childs) ? $project->setChilds($this->childs) : null;
+        $project = (new IssueEntity())
+            ->setId($this->id)
+            ->setProjectId($this->projectId)
+            ->setType($this->type)
+            ->setTitle($this->title)
+            ->setTime($this->time)
+            ->setTotalTime($this->totalTime)
+            ->setChilds($this->childs)
+            ->setParent($this->parentId);
 
         return $project;
     }

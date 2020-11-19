@@ -23,7 +23,7 @@ class IssueEntity
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      */
-    private int $id;
+    private ?int $id;
     /**
      * @ORM\Column(type="integer", length=255, unique=true, nullable=false)
      */
@@ -53,7 +53,7 @@ class IssueEntity
      * @ManyToOne(targetEntity="IssueEntity", inversedBy="childs")
      * @JoinColumn(name="parent_id", referencedColumnName="id")
      */
-    private int $parent;
+    private ?int $parent;
     // ...
 
     public function __construct() {
@@ -61,24 +61,26 @@ class IssueEntity
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
 
     /**
-     * @param int $id
+     * @param int|null $id
      *
      * @return IssueEntity
      */
-    public function setId(int $id): IssueEntity
+    public function setId(?int $id): IssueEntity
     {
         $this->id = $id;
 
         return $this;
     }
+
+
 
     /**
      * @return int
@@ -201,24 +203,28 @@ class IssueEntity
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getParent(): int
+    public function getParent(): ?int
     {
         return $this->parent;
     }
 
     /**
-     * @param int $parent
+     * @param int|null $parent
      *
      * @return IssueEntity
      */
-    public function setParent(int $parent): IssueEntity
+    public function setParent(?int $parent): IssueEntity
     {
         $this->parent = $parent;
 
         return $this;
     }
+
+
+
+
 
 
 

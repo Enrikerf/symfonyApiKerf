@@ -9,14 +9,13 @@ use App\Domain\Issue\Issue;
 use Exception;
 
 
-
 class IssuePersistenceAdapter
 {
 
     public const ORM_EXCEPTION = 500;
     private const DEFAULT_OFFSET = 0;
     private const DEFAULT_LIMIT = 100;
-    private IssueEntityRepository $issueEntityRepository;
+    private IssueEntityRepository   $issueEntityRepository;
     private DoctrineMapperInterface $mapper;
 
     public function __construct(IssueEntityRepository $issueEntityRepository, DoctrineMapperInterface $mapper)
@@ -104,7 +103,11 @@ class IssuePersistenceAdapter
 
     private function updateContent(IssueEntity &$issueEntityInDb, IssueEntity $newIssueEntityData)
     {
-        $newIssueEntityData->getName() !== null ? $issueEntityInDb->setName($newIssueEntityData->getName()) : null;
-        $newIssueEntityData->getIssueCount() !== null ? $issueEntityInDb->setIssueCount($newIssueEntityData->getIssueCount()) : null;
+        $newIssueEntityData->getProjectId() !== null ? $issueEntityInDb->setProjectId($newIssueEntityData->getProjectId()) : null;
+        $newIssueEntityData->getType() !== null ? $issueEntityInDb->setType($newIssueEntityData->getType()) : null;
+        $newIssueEntityData->getTitle() !== null ? $issueEntityInDb->setTitle($newIssueEntityData->getTitle()) : null;
+        $newIssueEntityData->getTime() !== null ? $issueEntityInDb->setTime($newIssueEntityData->getTime()) : null;
+        $newIssueEntityData->getTotalTime() !== null ? $issueEntityInDb->setTotalTime($newIssueEntityData->getTotalTime()) : null;
+        $newIssueEntityData->getParent() !== null ? $issueEntityInDb->setParent($newIssueEntityData->getParent()) : null;
     }
 }

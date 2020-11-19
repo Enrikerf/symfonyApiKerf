@@ -3,6 +3,7 @@
 namespace App\Tests\Unitary\Domain\Issue;
 
 use App\Domain\Issue\Issue;
+use function PHPUnit\Framework\returnCallback;
 
 
 class IssueTestBuilder
@@ -18,6 +19,8 @@ class IssueTestBuilder
     const DEFAULT_TIME = 0;
     const DEFAULT_TOTAL_TIME = 0;
     const DEFAULT_CHILDS = [];
+    const NOT_DEFAULT_TITLE = 'NOT_DEFAULT_TITLE';
+    const NOT_DEFAULT_TIME = 100;
     private ?int     $id        = null;
     private ?int     $projectId = null;
     private ?string  $type      = null;
@@ -43,12 +46,28 @@ class IssueTestBuilder
 
     public static function getDefaultTypeTopic(): Issue
     {
-        return new Issue(
+        return (new Issue(
             self::DEFAULT_PROJECT_ID,
             self::DEFAULT_TITLE,
             Issue::TYPE_TOPIC,
             self::DEFAULT_PARENT_ID
-        );
+        ))->setChilds([
+            self::getDefaultNew(),
+            self::getDefaultNew(),
+        ]);
+    }
+
+    public static function getDefaultPersisted(): Issue
+    {
+        return (new Issue(
+            self::DEFAULT_PROJECT_ID,
+            self::DEFAULT_TITLE,
+            Issue::TYPE_TOPIC,
+            self::DEFAULT_PARENT_ID
+        ))->setChilds([
+            self::getDefaultNew(),
+            self::getDefaultNew(),
+        ]);
     }
 
     public function id(int $id)

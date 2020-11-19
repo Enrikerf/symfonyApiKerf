@@ -30,6 +30,14 @@ class Issue
         $this->setTime(0);
     }
 
+    private function calculateTotalTime()
+    {
+        $this->totalTime = $this->time;
+        foreach ($this->childs as $child) {
+            $this->totalTime += $child->getTime();
+        }
+    }
+
     /**
      * @return int|null
      */
@@ -127,6 +135,7 @@ class Issue
         return $this->totalTime;
     }
 
+
     /**
      * @return array
      */
@@ -153,11 +162,27 @@ class Issue
         return $this;
     }
 
-    private function calculateTotalTime()
+    /**
+     * @return int|null
+     */
+    public function getParent(): ?int
     {
-        $this->totalTime = $this->time;
-        foreach ($this->childs as $child) {
-            $this->totalTime += $child->getTime();
-        }
+        return $this->parent;
     }
+
+    /**
+     * @param int|null $parent
+     *
+     * @return Issue
+     */
+    public function setParent(?int $parent): Issue
+    {
+        $this->parent = $parent;
+
+        return $this;
+    }
+
+
+
+
 }

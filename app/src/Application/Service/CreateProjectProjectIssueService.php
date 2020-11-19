@@ -32,7 +32,7 @@ class CreateProjectProjectIssueService implements CreateProjectIssueUseCase
             if ($project = $this->getProjectPort->get($createCommand->getProjectId())) {
                 if ($createCommand->getParentId()) {
                     $parentIssue = $this->createProjectIssuePort->get($createCommand->getParentId());
-                    if ($parentIssue->getType() !== Issue::TYPE_TOPIC) {
+                    if (!$parentIssue || $parentIssue->getType() !== Issue::TYPE_TOPIC) {
                         return new CreateProjectIssueResponse(ResponseCode::BAD_REQUEST, []);
                     }
                 }

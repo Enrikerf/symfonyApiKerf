@@ -4,7 +4,6 @@ namespace App\Tests\Unitary\Application\Port\out\Persistence\Database;
 
 use App\Application\Port\out\Persistence\Database\GetProjectIssuePort;
 use App\Tests\Unitary\Domain\Issue\IssueTestBuilder;
-use App\Tests\Unitary\Domain\Project\ProjectTestBuilder;
 use Exception;
 use Mockery;
 

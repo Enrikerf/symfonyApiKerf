@@ -3,6 +3,10 @@
 namespace App\Adapter\in\Api\Handler;
 
 use App\Application\Model\ResponseCode;
+use App\Application\Port\in\CreateProjectIssue\CreateProjectIssueCommand;
+use App\Application\Port\in\CreateProjectIssue\CreateProjectIssueUseCase;
+use App\Application\Port\in\GetIssue\GetIssueQuery;
+use App\Application\Port\out\Persistence\Database\GetIssuePort;
 use OpenAPI\Server\Api\IssuesApiInterface;
 use OpenAPI\Server\Model\CreateIssue;
 use OpenAPI\Server\Model\Time;
@@ -11,8 +15,19 @@ use OpenAPI\Server\Model\Time;
 class IssueControllerAdapter implements IssuesApiInterface
 {
 
-    public function __construct()
+    private GetIssueQuery             $getIssueQuery;
+    private CreateProjectIssueUseCase $createProjectIssue;
+
+    /**
+     * IssueControllerAdapter constructor.
+     *
+     * @param GetIssueQuery             $getIssuePort
+     * @param CreateProjectIssueUseCase $createProjectIssue
+     */
+    public function __construct(GetIssueQuery $getIssuePort, CreateProjectIssueUseCase $createProjectIssue)
     {
+        $this->getIssueQuery = $getIssuePort;
+        $this->createProjectIssue = $createProjectIssue;
     }
 
     /**
@@ -20,25 +35,13 @@ class IssueControllerAdapter implements IssuesApiInterface
      */
     public function issueIdGet($id, &$responseCode, array &$responseHeaders)
     {
-        $responseCode = ResponseCode::OK;
-
-        return [
-            "id" => 1,
-            "project_id" => 1,
-            "type" => "topic",
-            "title" => "a parent issue",
-            "time" => 5,
-            "total_time" => 7.5,
-            "childs" => [
-                [
-                    "id" => 2,
-                    "type" => "config",
-                    "title" => "a child issue",
-                    "time" => 2.5,
-                    "total_time" => 2.5,
-                ],
-            ],
-        ];
+        $response = $this->getIssueQuery->getIssueQuery($id);
+        $responseCode = $response->getResponseCode();
+        if ($responseCode === ResponseCode::OK) {
+            return $response->getMessage()[0];
+        } else {
+            return $response->getMessage();
+        }
     }
 
     /**
@@ -88,17 +91,18 @@ class IssueControllerAdapter implements IssuesApiInterface
         &$responseCode,
         array &$responseHeaders
     ) {
-        $responseCode = ResponseCode::OK;
-
-        return [
-            [
-                "id" => 1,
-                "project_id" => 1,
-                "type" => "dev",
-                "title" => "a parent issue",
-                "time" => 5,
-                "total_time" => 7.5,
-            ],
-        ];
+        $createProjectCommand = new CreateProjectIssueCommand(
+            $projectId,
+            $createIssue->getTitle(),
+            $createIssue->getType(),
+            $createIssue->getParentId()
+        );
+        $response = $this->createProjectIssue->create($createProjectCommand);
+        $responseCode = $response->getResponseCode();
+        if ($responseCode === ResponseCode::OBJECT_CREATED) {
+            return $response->getMessage()[0];
+        } else {
+            return $response->getMessage();
+        }
     }
 }

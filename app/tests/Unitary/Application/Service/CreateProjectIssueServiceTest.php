@@ -65,6 +65,23 @@ class CreateProjectIssueServiceTest extends TestCase
         $this->assertEquals(ResponseCode::BAD_REQUEST, $return->getResponseCode());
     }
 
+    public function testOnParentNotFoundReturnBadRequest(): void
+    {
+        $createProjectService = $this->getTestedClass(
+            GetProjectPortMockBuilder::getDefault(),
+            CreateProjectIssuePortMockBuilder::getTopicTypeParentOnGetButNotFoundParentOnSave()
+        );
+        $return = $createProjectService->create(
+            new CreateProjectIssueCommand(
+                IssueTestBuilder::DEFAULT_PROJECT_ID,
+                IssueTestBuilder::DEFAULT_TYPE,
+                IssueTestBuilder::DEFAULT_TITLE,
+                IssueTestBuilder::PARENT_ID,
+            )
+        );
+        $this->assertEquals(ResponseCode::BAD_REQUEST, $return->getResponseCode());
+    }
+
     public function testOnNotFoundProjectIdReturnBadRequest(): void
     {
         $createProjectService = $this->getTestedClass(

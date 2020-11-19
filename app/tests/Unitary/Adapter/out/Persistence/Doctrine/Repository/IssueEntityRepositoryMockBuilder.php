@@ -28,6 +28,7 @@ class IssueEntityRepositoryMockBuilder
             IssueEntity $issueEntity
         ) {
             $issueEntity->setId(IssueEntityTestBuilder::DEFAULT_ID);
+
             return $issueEntity;
         });
 
@@ -70,8 +71,10 @@ class IssueEntityRepositoryMockBuilder
     public static function getReturnDefaultProjectOnFind()
     {
         $issueEntityRepository = Mockery::mock(IssueEntityRepository::class);
-        $issueEntityRepository->shouldReceive('find')
-            ->andReturn(IssueEntityTestBuilder::getDefaultNew());
+        $issueEntityRepository->allows([
+            'find' => IssueEntityTestBuilder::getDefaultNew(),
+            'findBy' => [IssueEntityTestBuilder::getDefaultNew()],
+        ]);
 
         return $issueEntityRepository;
     }

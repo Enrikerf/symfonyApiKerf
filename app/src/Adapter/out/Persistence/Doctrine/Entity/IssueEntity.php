@@ -2,7 +2,9 @@
 
 namespace App\Adapter\out\Persistence\Doctrine\Entity;
 
+use App\Domain\Issue\Issue;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
@@ -16,8 +18,6 @@ use Doctrine\ORM\Mapping\OneToMany;
 class IssueEntity
 {
 
-
-
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -25,7 +25,7 @@ class IssueEntity
      */
     private ?int $id;
     /**
-     * @ORM\Column(type="integer", length=255, unique=true, nullable=false)
+     * @ORM\Column(type="integer",  unique=false, nullable=false)
      */
     protected int $projectId;
     /**
@@ -45,20 +45,10 @@ class IssueEntity
      */
     protected float $totalTime;
     /**
-     * @OneToMany(targetEntity="IssueEntity", mappedBy="parent")
-     */
-    protected ArrayCollection $childs;
-
-    /**
-     * @ManyToOne(targetEntity="IssueEntity", inversedBy="childs")
-     * @JoinColumn(name="parent_id", referencedColumnName="id")
+     * @ORM\Column(type="integer", unique=false, nullable=true)
      */
     private ?int $parent;
-    // ...
 
-    public function __construct() {
-        $this->childs = new ArrayCollection();
-    }
 
     /**
      * @return int|null
@@ -79,8 +69,6 @@ class IssueEntity
 
         return $this;
     }
-
-
 
     /**
      * @return int
@@ -183,26 +171,6 @@ class IssueEntity
     }
 
     /**
-     * @return ArrayCollection
-     */
-    public function getChilds(): ArrayCollection
-    {
-        return $this->childs;
-    }
-
-    /**
-     * @param ArrayCollection $childs
-     *
-     * @return IssueEntity
-     */
-    public function setChilds(ArrayCollection $childs): IssueEntity
-    {
-        $this->childs = $childs;
-
-        return $this;
-    }
-
-    /**
      * @return int|null
      */
     public function getParent(): ?int
@@ -221,10 +189,6 @@ class IssueEntity
 
         return $this;
     }
-
-
-
-
 
 
 

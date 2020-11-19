@@ -64,7 +64,15 @@ class SymfonySerializer implements DoctrineMapperInterface
     public function denormalize($data, $type)
     {
         try {
-            $dataDenormalized = $this->serializer->denormalize($this->serializer->normalize($data), $type);
+            $dataDenormalized = $this->serializer->denormalize(
+                $this->serializer->normalize($data),
+                $type,
+                null,
+                [
+                    ObjectNormalizer::ENABLE_MAX_DEPTH => true,
+                    ObjectNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object) { return $object->getId(); },
+                ]
+            );
             if ($dataDenormalized instanceof $type || is_array($dataDenormalized)) {
                 return $dataDenormalized;
             } else {

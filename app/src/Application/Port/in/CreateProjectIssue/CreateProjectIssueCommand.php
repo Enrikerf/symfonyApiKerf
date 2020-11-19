@@ -18,7 +18,7 @@ class CreateProjectIssueCommand
      * @param string   $title
      * @param int|null $parentId
      */
-    public function __construct(int $projectId, string $type, string $title, ?int $parentId)
+    public function __construct(int $projectId,string $title, string $type,  ?int $parentId)
     {
         $this->projectId = $projectId;
         $this->type = $type;

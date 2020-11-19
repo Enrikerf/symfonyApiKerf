@@ -23,7 +23,6 @@ class IssueEntityTestBuilder
     private ?string           $title     = null;
     private ?float            $time      = null;
     private ?float            $totalTime = null;
-    private ArrayCollection   $childs;
     private ?int              $parentId  = null;
 
     public static function getBuilder()
@@ -39,7 +38,6 @@ class IssueEntityTestBuilder
             ->setTitle(self::DEFAULT_TITLE)
             ->setTime(self::DEFAULT_TIME)
             ->setTotalTime(self::DEFAULT_TOTAL_TIME)
-            ->setChilds(new ArrayCollection())
             ->setParent(self::DEFAULT_PARENT_ID);
     }
 
@@ -83,12 +81,6 @@ class IssueEntityTestBuilder
         return $this;
     }
 
-    public function childs(ArrayCollection $childs)
-    {
-        $this->childs = $childs;
-
-        return $this;
-    }
 
     public function parentId(?int $parentId)
     {
@@ -116,7 +108,6 @@ class IssueEntityTestBuilder
             ->setTitle($this->title)
             ->setTime($this->time)
             ->setTotalTime($this->totalTime)
-            ->setChilds($this->childs)
             ->setParent($this->parentId);
 
         return $project;

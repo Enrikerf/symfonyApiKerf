@@ -5,11 +5,16 @@ namespace App\Adapter\out\Persistence\Doctrine\Adapter;
 use App\Adapter\out\Persistence\Doctrine\Entity\IssueEntity;
 use App\Adapter\out\Persistence\Doctrine\Mapper\DoctrineMapperInterface;
 use App\Adapter\out\Persistence\Doctrine\Repository\IssueEntityRepository;
+use App\Application\Port\out\Persistence\Database\CreateProjectIssuePort;
+use App\Application\Port\out\Persistence\Database\GetIssuePort;
 use App\Domain\Issue\Issue;
 use Exception;
+use Symfony\Component\Validator\Constraints\NotNull;
+use Symfony\Component\Validator\ValidatorBuilder;
+use function PHPUnit\Framework\assertInstanceOf;
 
 
-class IssuePersistenceAdapter
+class IssuePersistenceAdapter implements GetIssuePort, CreateProjectIssuePort
 {
 
     public const ORM_EXCEPTION = 500;
@@ -51,7 +56,11 @@ class IssuePersistenceAdapter
     {
         try {
             if ($issueEntity = $this->issueEntityRepository->find($id)) {
-                return $this->mapper->denormalize($issueEntity, Issue::class);
+                $childEntities = $this->issueEntityRepository->findBy(['parent'=>$issueEntity->getId()]);
+                $child =  $this->mapper->denormalize($childEntities,Issue::class . '[]');
+                $issue = $this->mapper->denormalize($issueEntity, Issue::class);
+                $issue->setChilds($child);
+                return $issue;
             } else {
                 return null;
             }

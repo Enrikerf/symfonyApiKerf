@@ -28,6 +28,19 @@ class CreateProjectIssuePortMockBuilder
         return $mock;
     }
 
+    public static function getTopicTypeParentOnGetButNotFoundParentOnSave(): CreateProjectIssuePort
+    {
+        $mock = Mockery::mock(CreateProjectIssuePort::class);
+        $mock->shouldReceive('get')->andReturn(null);
+        $mock->shouldReceive('save')->with(Mockery::on(function (Issue $issue) {
+            $issue->setId(IssueTestBuilder::DEFAULT_PERSISTED_ID);
+
+            return true;
+        }))->andReturn(null);
+
+        return $mock;
+    }
+
     public static function getNonTopicTypeParentOnGetAndDefaultIssuePersistedOnSave(): CreateProjectIssuePort
     {
         $mock = Mockery::mock(CreateProjectIssuePort::class);
